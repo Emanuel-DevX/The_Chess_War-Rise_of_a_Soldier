@@ -49,7 +49,8 @@ def validate_move(board_size, row, col, direction):
     :precondition: row and col must be integers between 0 and board_size - 1 (inclusive).
     :precondition: direction must be one of the allowed direction strings ('north', 'south',
                    'east', 'west', 'north_east', 'north_west', 'south_east', 'south_west').
-    :postcondition: Returns True if the proposed move stays within the board boundaries, False otherwise.
+    :postcondition: Validate if the proposed move stays within the board boundaries.
+    :return: True if the proposed move stays within the board boundaries, False otherwise.
 
     >>> validate_move(8, 7, 3, 'north')
     True
@@ -86,3 +87,54 @@ def validate_move(board_size, row, col, direction):
         return True
 
     return False
+
+
+def move(board_size, row, col, direction):
+    """
+    Move the character on the board according to the desired direction, if valid.
+
+    :param board_size: An integer representing the size of the square board (board is board_size x board_size).
+    :param row: An integer representing the character's current row position.
+    :param col: An integer representing the character's current column position.
+    :param direction: A string representing the proposed movement direction, which can be:
+                      'north', 'south', 'east', 'west', 'north_east', 'north_west',
+                      'south_east', or 'south_west'.
+    :precondition: board_size must be a positive integer.
+    :precondition: row and col must be integers between 0 and board_size - 1 (inclusive).
+    :precondition: direction must be one of the allowed direction strings ('north', 'south',
+                   'east', 'west', 'north_east', 'north_west', 'south_east', 'south_west').
+    :postcondition: If the move is valid, the character is moved in the specified direction.
+                    If the move is invalid, the character remains in the current position.
+    :return: A tuple (new_row, new_col) representing the character's new position.
+
+    >>> move(8, 7, 3, 'north')
+    (6, 3)
+    >>> move(8, 0, 0, 'west')
+    (0, 0)
+    >>> move(8, 4, 4, 'north_east')
+    (3, 5)
+    >>> move(8, 1, 1, 'south_west')
+    (2, 0)
+    """
+    if validate_move(board_size, row, col, direction):
+        if direction == 'north':
+            row -= 1
+        elif direction == 'south':
+            row += 1
+        elif direction == 'east':
+            col += 1
+        elif direction == 'west':
+            col -= 1
+        elif direction == 'north_east':
+            row -= 1
+            col += 1
+        elif direction == 'north_west':
+            row -= 1
+            col -= 1
+        elif direction == 'south_east':
+            row += 1
+            col += 1
+        elif direction == 'south_west':
+            row += 1
+            col -= 1
+    return row, col
