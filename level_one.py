@@ -1,4 +1,5 @@
 from utilities import *
+import random
 
 
 def level_one_intro():
@@ -93,9 +94,58 @@ def get_pawn_direction_choice():
     return direction_map.get(choice, None)  # Return None if invalid input
 
 
+def assign_position_attributes(column):
+    """
+    Assign attributes based on the column (file) position.
+
+    :param column: The column (file) index (0-7).
+    :return: A tuple containing skill boost and health adjustment.
+    """
+    if column in [0, 7]:
+        return "Safe Zone", 5, 10  # Slight skill boost, health +10
+    elif column in [1, 6]:  # Near corners (moderate risk)
+        return "Moderate Risk", 10, 5  # Moderate skill boost, health +5
+    elif column in [2, 5]:  # Middle edge (higher risk)
+        return "Risky", 15, 0  # More skill boost, no health change
+    else:  # Columns 3 and 4 (most dangerous but rewarding)
+        return "High Risk", 20, -5  # High skill boost, health -5
+
+
+def place_pawn(player):
+    """
+    Randomly place the pawn on the 2nd rank (row 6) and allows the user to choose whether to keep it.
+
+    :param player: A dictionary representing the player's attributes.
+    :postcondition: Update the player's position, health, and knowledge based on the chosen location.
+    """
+    while True:
+        column = random.randint(0, 7)  # Random file (column)
+        location = (6, column)  # Row 6 (2nd rank)
+        file_letter = column_to_file(column)
+        zone, skill_boost, health_change = assign_position_attributes(column)
+
+        print(f"\nYour pawn is placed at Rank 2, File {file_letter} ({zone} area).")
+        print(f"- 🛠️ Skill Boost: {skill_boost}\n- ❤️ Health Change: {health_change}")
+
+        print("\nChoose an option:")
+        print("1️ Keep this position")
+        print("2️ Re-roll for a new position")
+
+        choice = input("Enter your choice (1 or 2): ").strip()
+        if choice == "1":
+            player["position"] = location
+            player["health"] += health_change
+            player["knowledge"].append(f"Started in a {zone} area")
+            break
+
+    print("✅ Final position set!")
+    return player
+
+
 def run_level(player):
     level_one_intro()
     level_one_training()
+    place_pawn(player)
     while True:
         print_map(8, 8, player["position"])
         desired_move = get_pawn_direction_choice()
@@ -106,16 +156,7 @@ def run_level(player):
         col = player["position"][1]
 
         new_position = move(8, row, col, desired_move)
-        print(new_position)
         player["position"] = new_position
 
 
-player = {
-    "health": 100,
-    "piece": "pawn",
-    "position": (6,2),
-    "inventory": [],
-    "knowledge": [],
-    "completed_challenges": [],
-}
-run_level(player)
+
