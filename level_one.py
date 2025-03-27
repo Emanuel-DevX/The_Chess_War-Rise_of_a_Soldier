@@ -1,3 +1,6 @@
+from utilities import *
+
+
 def level_one_intro():
     intro_text = """
     ───────────────────────────────────────
@@ -38,8 +41,8 @@ def level_one_training():
 
         ┌────────────────────────────┐
         │   MOVE OPTIONS:            │
-        │   🔹 Forward (↑)           │
-        │   🔹 Capture Left (↖)      │
+        │   🔹 Forward North (↑)     │
+        │   🔹 Capture Left  (↖)     │
         │   🔹 Capture Right (↗)     │
         └────────────────────────────┘
 
@@ -68,9 +71,51 @@ def level_one_training():
     input()
 
 
+def get_pawn_direction_choice():
+    """
+    Ask the user to choose a valid direction for the pawn from a numbered list.
+
+    :return: A string representing the chosen direction.
+    """
+    print("Choose a direction for the pawn:")
+    print("1. North (Move forward)")
+    print("2. North-East (Capture right)")
+    print("3. North-West (Capture left)")
+
+    choice = input("Enter a number (1-3): ")
+
+    direction_map = {
+        '1': 'north',
+        '2': 'north_east',
+        '3': 'north_west'
+    }
+
+    return direction_map.get(choice, None)  # Return None if invalid input
+
+
 def run_level(player):
     level_one_intro()
     level_one_training()
+    while True:
+        print_map(8, 8, player["position"])
+        desired_move = get_pawn_direction_choice()
+        if not desired_move:
+            print("Please enter a valid move!")
+            continue
+        row = player["position"][0]
+        col = player["position"][1]
+
+        new_position = move(8, row, col, desired_move)
+        print(new_position)
+        player["position"] = new_position
 
 
-run_level(0)
+player = {
+    "health": 100,
+    "piece": "pawn",
+    "position": (6,2),
+    "inventory": [],
+    "knowledge": [],
+    "completed_challenges": [],
+}
+run_level(player)
