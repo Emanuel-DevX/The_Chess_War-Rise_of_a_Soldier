@@ -33,3 +33,56 @@ def print_map(rows, column, player_loc):
                     my_map += "   "
         my_map += "\n"
     print(my_map)
+
+
+def validate_move(board_size, row, col, direction):
+    """
+    Validate if the character's proposed move stays within the boundaries of the board.
+
+    :param board_size: An integer representing the size of the square board (board is board_size x board_size).
+    :param row: An integer representing the character's current row position.
+    :param col: An integer representing the character's current column position.
+    :param direction: A string representing the proposed movement direction, which can be:
+                      'north', 'south', 'east', 'west', 'north_east', 'north_west',
+                      'south_east', or 'south_west'.
+    :precondition: board_size must be a positive integer.
+    :precondition: row and col must be integers between 0 and board_size - 1 (inclusive).
+    :precondition: direction must be one of the allowed direction strings ('north', 'south',
+                   'east', 'west', 'north_east', 'north_west', 'south_east', 'south_west').
+    :postcondition: Returns True if the proposed move stays within the board boundaries, False otherwise.
+
+    >>> validate_move(8, 7, 3, 'north')
+    True
+    >>> validate_move(8, 7, 3, 'south')
+    False
+    >>> validate_move(8, 0, 0, 'north')
+    False
+    >>> validate_move(8, 0, 0, 'west')
+    False
+    >>> validate_move(8, 4, 4, 'north_east')
+    True
+    >>> validate_move(8, 0, 7, 'north_west')
+    False
+    >>> validate_move(8, 6, 6, 'south_east')
+    True
+    >>> validate_move(8, 1, 1, 'south_west')
+    True
+    """
+    if direction == 'north' and row > 0:
+        return True
+    elif direction == 'south' and row < board_size - 1:
+        return True
+    elif direction == 'east' and col < board_size - 1:
+        return True
+    elif direction == 'west' and col > 0:
+        return True
+    elif direction == 'north_east' and row > 0 and col < board_size - 1:
+        return True
+    elif direction == 'north_west' and row > 0 and col > 0:
+        return True
+    elif direction == 'south_east' and row < board_size - 1 and col < board_size - 1:
+        return True
+    elif direction == 'south_west' and row < board_size - 1 and col > 0:
+        return True
+
+    return False
