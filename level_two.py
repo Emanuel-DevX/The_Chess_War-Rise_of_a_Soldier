@@ -76,5 +76,41 @@ def level_two_training():
     input()
 
 
+def spy_mission():
+    mission_text = """
+    ──────────────────────────────────────────────
+                MISSION: FIND THE SPY
+    ──────────────────────────────────────────────
+
+    Your mission, brave soldier, is to uncover the traitor among your ranks—the spy. 
+    The spy has been planting ambushes all over the land to trap unsuspecting soldiers like you. 
+    Your goal is to navigate the battlefield, avoiding traps, and figure out who the spy is. 
+
+    The spy could be anyone. Look for unusual patterns in their movement or actions—anything out of place.
+
+    Here are your instructions:
+
+    1. **Move with caution**: The land is dangerous, and ambushes lie hidden. 
+       Watch your surroundings carefully and move one step at a time.
+    2. **Spy Indicators**: Keep an eye on any strange behavior, like soldiers moving away from their posts or odd paths 
+        that don't align with normal patrol routes.
+    3. **Avoid Ambushes**: You may stumble upon traps. If you suspect a trap, **don't engage immediately**. 
+        Look for safer paths and be cautious when moving into enemy territory.
+    4. **Find the Spy**: Use your instincts to determine who among your allies may be the spy. 
+       They might try to blend in but their actions will give them away.
+
+    ❗ **Warning**: The spy may also attempt to mislead you by feigning innocence or offering false directions. 
+
+    Once you believe you've identified the spy, report back to your commander. 
+    If you're wrong, the enemy might use your mistake against you.
+
+    ➡️ Press ENTER to begin your search for the spy...
+    """
+    print(mission_text)
+    input()
+
+
 level_two_intro()
 level_two_training()
+spy_mission()
+
