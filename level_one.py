@@ -26,3 +26,51 @@ def level_one_intro():
     input()
 
 
+def level_one_training():
+    training_text = """
+    ─────────────────────────────────────────────
+             🏰 TRAINING: PAWN MOVEMENT 🏰
+    ─────────────────────────────────────────────
+
+             You are a PAWN. Your movement is limited, 
+             but every step forward brings you closer to 
+             greatness.
+
+        ┌────────────────────────────┐
+        │   MOVE OPTIONS:            │
+        │   🔹 Forward (↑)           │
+        │   🔹 Capture Left (↖)      │
+        │   🔹 Capture Right (↗)     │
+        └────────────────────────────┘
+
+         8 ⬜ ⬛ ⬜ ⬛ ⬜ ⬛ ⬜ ⬛ 
+         7 ⬛ ⬜ ⬛ ⬜ ⬛ ⬜ ⬛ ⬜ 
+         6 ⬜ ⬛ ⬜ ⬛ ⬜ ⬛ ⬜ ⬛ 
+         5 ⬛ ⬜ ⬛ ⬜ ⬛ ⬜ ⬛ ⬜ 
+         4 ⬜ ⬛ ⬜ ⬛ ⬜ ⬛ ⬜ ⬛ 
+         3 ⬛ ⬜ ⬛ ⬜ ⬛ ⬜ ⬛ ⬜ 
+         2 ⬜ ⬛ ⬜ ⬛ ⬜ ⬛ ⬜ ⬛ 
+         1 ⬛ ⬜ ⬛ ⬜ ⬛ ⬜ ⬛ ⬜ 
+           A  B  C  D  E  F  G  H
+
+    You can only move FORWARD unless you are capturing. 
+    If an enemy piece is on the left or right diagonal, 
+    you can attack!
+
+    ❗ IMPORTANT ❗
+    - You cannot move backward.
+    - You cannot capture straight ahead.
+    - Your journey to the 8th rank starts NOW!
+
+    ➡️ Press ENTER to continue...
+    """
+    print(training_text)
+    input()
+
+
+def run_level(player):
+    level_one_intro()
+    level_one_training()
+
+
+run_level(0)
