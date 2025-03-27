@@ -142,6 +142,42 @@ def place_pawn(player):
     return player
 
 
+def confirm_move(player, direction):
+    """
+    Confirm if the player wants to proceed with their move and introduce a random chance of waiting or risk.
+
+    :param player: A dictionary representing the player's attributes.
+    :param direction: The direction in which the player wants to move.
+    :postcondition: Either allows or prevents movement based on conditions.
+    :return: A boolean indicating whether the move is allowed.
+    """
+    if direction == "north":
+        event = random.randint(1, 5)
+        if event == 1:
+            print("🚧 The path is blocked. You must wait!")
+            return False
+        elif event == 2:
+            print("⚠️ Moving forward will remove your protection but bring you closer to greatness!")
+            player["boldness"] += 1
+    elif direction in ["north_west", "north_east"]:
+        event = random.randint(1, 3)
+        if event == 1:
+            print("⭕ No piece to capture, safe to move!")
+            return False
+        elif event == 2:
+            print("⚠️ The path might be dangerous, proceed with caution!")
+            player["boldness"] += 1
+        else:
+            print("🚧 Blocked! You must wait!")
+            return False
+
+    print("Do you want to proceed?")
+    print("1️ Yes, move ahead!")
+    print("2️ No, reconsider!")
+    choice = input("Enter your choice (1 or 2): ").strip()
+    return choice == "1"
+
+
 def run_level(player):
     level_one_intro()
     level_one_training()
@@ -156,7 +192,8 @@ def run_level(player):
         col = player["position"][1]
 
         new_position = move(8, row, col, desired_move)
-        player["position"] = new_position
+        if confirm_move(player, desired_move):
+            player["position"] = new_position
 
 
 
