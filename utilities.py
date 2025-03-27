@@ -200,3 +200,17 @@ def promote_player(player):
         player["knowledge"].append("Overlord - Imposes dominance without being a King.")
         player["completed_challenges"].append("Level 3 Completed")
         print("👑 The Rook, now Overlord, enforces its rule from the Obsidian Tower!")
+
+
+def print_level_completion_message(level):
+    """
+    Print a congratulatory message when a player completes a level.
+
+    :param level: The level that was completed.
+    """
+    messages = {
+        1: "🎉 Congratulations! You have completed Level 1! Your journey as a Bishop begins.",
+        2: "🎉 Well done! Level 2 completed! The power of the Rook is now yours.",
+        3: "👑 Magnificent! You have reached the pinnacle as an Overlord! Rule wisely."
+    }
+    print(messages.get(level, "🎉 Congratulations on your achievement!"))
