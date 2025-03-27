@@ -1,3 +1,6 @@
+import random
+
+
 def print_map(rows, column, player_loc):
     """
     Display a visual representation of the game map with walls and the player's position.
@@ -139,6 +142,7 @@ def move(board_size, row, col, direction):
             col -= 1
     return row, col
 
+
 def column_to_file(column):
     """
     Convert column index (0-7) to chess file (A-H).
@@ -154,3 +158,45 @@ def column_to_file(column):
     'B'
     """
     return chr(65 + column)
+
+
+def check_ambush(player):
+    """
+    Check if the player encounters an ambush based on their boldness level.
+
+    :param player: A dictionary representing the player's attributes.
+    :postcondition: Reduces health if an ambush occurs.
+    """
+    if player["boldness"] > 3 and random.random() < (player["boldness"] * 0.1):
+        damage = random.randint(20, 40)
+        player["health"] -= damage
+        print(f"💀 Ambush! You lost {damage} health points!")
+    else:
+        print("🛡️ No ambush this time.")
+
+
+def promote_player(player):
+    """
+    Promote the player.
+
+    :param player: A dictionary representing the player's attributes.
+    :postcondition: Update the player's piece, skills, and completed challenges.
+    """
+    if player["piece"] == "pawn":
+        player["piece"] = "bishop"
+        player["health"] += 20
+        player["knowledge"].append("Master of Diagonal Warfare")
+        player["completed_challenges"].append("Level 1 Completed")
+        print("🔱 Your pawn has been promoted to a Bishop!")
+    elif player["piece"] == "bishop":
+        player["piece"] = "rook"
+        player["health"] += 30
+        player["knowledge"].append("Master of Straight-Line Power")
+        player["completed_challenges"].append("Level 2 Completed")
+        print("🏰 Your Bishop has been promoted to a Rook!")
+    elif player["piece"] == "rook":
+        player["piece"] = "overlord"
+        player["health"] += 50
+        player["knowledge"].append("Overlord - Imposes dominance without being a King.")
+        player["completed_challenges"].append("Level 3 Completed")
+        print("👑 The Rook, now Overlord, enforces its rule from the Obsidian Tower!")
