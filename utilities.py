@@ -138,3 +138,19 @@ def move(board_size, row, col, direction):
             row += 1
             col -= 1
     return row, col
+
+def column_to_file(column):
+    """
+    Convert column index (0-7) to chess file (A-H).
+
+    :param column: A positive integer between 0 and 7 (inclusive).
+    :precondition: column must be a positive integer between 0 and 7 (inclusive).
+    :postcondition: Convert the column to its equivalent chess file correctly.
+    :return: A single letter character representing the file (column position) on a chess board.
+
+    >>> column_to_file(3)
+    'D'
+    >>> column_to_file(1)
+    'B'
+    """
+    return chr(65 + column)
