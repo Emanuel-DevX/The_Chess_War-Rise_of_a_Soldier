@@ -275,11 +275,64 @@ def set_traps(game_map, board_start, num_traps=5):
             row = random.randint(board_start[0], board_start[0] + 7)
             col = random.randint(board_start[1], board_start[1] + 7)
 
-            if game_map[row][col] == ' ' and (row, col) not in traps:
+            if game_map[row][col].strip() == '' and (row, col) not in traps:
                 traps.append((row, col))
                 break
 
     return traps
+
+
+def check_for_trap(position, traps, player):
+    """
+    Check if the player stepped on a trap.
+
+    :param position: Current position
+    :param traps: List of trap positions
+    :param player: Player dictionary
+    :return: True if trap triggered, False otherwise
+    """
+    if position in traps:
+        damage = random.randint(5, 15)
+        player["health"] -= damage
+
+        trap_message = [
+            "⚠️ YOU TRIGGERED A TRAP! ⚠️",
+            f"You take {damage} damage.",
+            f"Remaining health: {player['health']}"
+        ]
+        update_display(trap_message)
+        time.sleep(2)
+
+        # Add to player knowledge
+        player["knowledge"].append("Discovered trap location")
+
+        return True
+    return False
+
+
+
+def encounter_event(player, game_map):
+    """
+    Random encounter event while moving.
+
+    :param player: Player dictionary
+    :param game_map: Current game map
+    :return: Event message
+    """
+    events = [
+        "You found a hidden passage! +5 movement points.",
+        "You sense a trap nearby. Proceed with caution.",
+        "You spot enemy movement in the distance.",
+        "You find signs of recent activity.",
+        "The path ahead looks clear."
+    ]
+
+    event = random.choice(events)
+
+    if "movement points" in event:
+        player["movement_points"] = player.get("movement_points", 0) + 5
+
+    return event
 
 
 def loading_screen():
