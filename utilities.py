@@ -3,6 +3,7 @@ import time
 
 import player_manager
 from map import setup_game_environment, update_player_on_map
+from player_manager import save_player
 
 
 def print_map(rows, column, player_loc):
@@ -190,19 +191,20 @@ def promote_player(player):
     """
     if player["piece"] == "pawn":
         player["piece"] = "bishop"
-        player["health"] += 20
+        player["position"] = [0,0]
+        player["gold"] += 20
         player["knowledge"].append("Master of Diagonal Warfare")
         player["completed_challenges"].append("Level 1 Completed")
         print("🔱 Your pawn has been promoted to a Bishop!")
     elif player["piece"] == "bishop":
         player["piece"] = "rook"
-        player["health"] += 30
+        player["gold"] += 30
         player["knowledge"].append("Master of Straight-Line Power")
         player["completed_challenges"].append("Level 2 Completed")
         print("🏰 Your Bishop has been promoted to a Rook!")
     elif player["piece"] == "rook":
         player["piece"] = "overlord"
-        player["health"] += 50
+        player["gold"] += 50
         player["knowledge"].append("Overlord - Imposes dominance without being a King.")
         player["completed_challenges"].append("Level 3 Completed")
         print("👑 The Rook, now Overlord, enforces its rule from the Obsidian Tower!")
@@ -256,6 +258,28 @@ def update_display(display_text):
         print(f"{my_text[row_number]:<100}", end="")
         print("".join(row))
 
+
+
+def set_traps(game_map, board_start, num_traps=5):
+    """
+    Set hidden traps on the board.
+
+    :param game_map: Current game map
+    :param board_start: Board starting position
+    :param num_traps: Number of traps to place
+    :return: List of trap positions
+    """
+    traps = []
+    for _ in range(num_traps):
+        while True:
+            row = random.randint(board_start[0], board_start[0] + 7)
+            col = random.randint(board_start[1], board_start[1] + 7)
+
+            if game_map[row][col] == ' ' and (row, col) not in traps:
+                traps.append((row, col))
+                break
+
+    return traps
 
 
 def loading_screen():
