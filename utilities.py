@@ -1,4 +1,5 @@
 import random
+import time
 
 import player_manager
 from map import setup_game_environment, update_player_on_map
@@ -229,10 +230,11 @@ def print_game_map(game_map):
 
 def update_display(display_text):
 
-    print("\n"*100)
+    print("\n"*50)
     game_map = setup_game_environment()
     player = player_manager.load_player()
-    update_player_on_map(game_map, player["position"])
+    if player["position"] != [0,0]:
+        update_player_on_map(game_map, player["position"])
     player_h = player["health"]
     player_g = player["gold"]
     health_msg = f"""
@@ -244,12 +246,30 @@ def update_display(display_text):
     game_map += [line.strip() for line in health_msg.splitlines()]
     my_text = []
     display_len = len(display_text)
-    if display_len < 35:
-        my_text += ["" for _ in range(35 - display_len)]
+    if display_len < 30:
+        my_text += ["" for _ in range(30 - display_len)]
     for line in display_text:
         my_text.append(line.strip())
+    my_text += ["" for _ in range(10)]
 
     for row_number, row in enumerate(game_map):
         print(f"{my_text[row_number]:<100}", end="")
         print("".join(row))
 
+
+
+def loading_screen():
+    load_msg = """
+
+    ██╗      ██████╗  █████╗ ██████╗ ██╗███╗   ██╗ ██████╗       
+    ██║     ██╔═══██╗██╔══██╗██╔══██╗██║████╗  ██║██╔════╝       
+    ██║     ██║   ██║███████║██║  ██║██║██╔██╗ ██║██║  ███╗      
+    ██║     ██║   ██║██╔══██║██║  ██║██║██║╚██╗██║██║   ██║      
+    ███████╗╚██████╔╝██║  ██║██████╔╝██║██║ ╚████║╚██████╔╝██╗██╗
+    ╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚═════╝ ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝╚═╝
+
+    """
+    print(load_msg)
+    for _ in range(90):
+        print("██", end="")
+        time.sleep(0.1)
