@@ -1,87 +1,98 @@
 from utilities import *
+from map import *
 import random
+import time
 
 
 def level_one_intro():
     intro_text = """
+    
+██╗     ███████╗██╗   ██╗███████╗██╗          ██████╗ ███╗   ██╗███████╗
+██║     ██╔════╝██║   ██║██╔════╝██║         ██╔═══██╗████╗  ██║██╔════╝
+██║     █████╗  ██║   ██║█████╗  ██║         ██║   ██║██╔██╗ ██║█████╗  
+██║     ██╔══╝  ╚██╗ ██╔╝██╔══╝  ██║         ██║   ██║██║╚██╗██║██╔══╝  
+███████╗███████╗ ╚████╔╝ ███████╗███████╗    ╚██████╔╝██║ ╚████║███████╗
+╚══════╝╚══════╝  ╚═══╝  ╚══════╝╚══════╝     ╚═════╝ ╚═╝  ╚═══╝╚══════╝
+
     ───────────────────────────────────────
        ⚔️  LEVEL 1: PAWN'S JOURNEY  ⚔️
     ───────────────────────────────────────
 
-    The battlefield is a chaotic mess of broken weapons, fallen soldiers, and 
-    the distant sound of war drums. You, a mere pawn, stand among the ranks, 
-    gripping your sword tightly. The enemy lines stretch before you, but 
+    The battlefield is a chaotic mess of broken weapons, fallen soldiers, and
+    the distant sound of war drums. You, a mere pawn, stand among the ranks,
+    gripping your sword tightly. The enemy lines stretch before you, but
     beyond them lies a chance for greatness.
 
     "Keep moving forward! No turning back!" yells your commander.
 
     Your mission is simple: Reach the enemy's last row and earn your promotion.
 
-    However, the battlefield is dangerous. Enemy pawns will try to stop you, 
+    However, the battlefield is dangerous. Enemy pawns will try to stop you,
     and the terrain itself is full of obstacles.
 
-    🔹 Move wisely. Your life depends on it. 
-    🔹 Watch out for enemy ambushes. 
-    🔹 Reach the 8th rank to achieve greatness!
+    * Move wisely. Your life depends on it.
+    * Watch out for enemy ambushes.
+    * Reach the 8th rank to achieve greatness!
 
     ➡️ Press ENTER to begin your journey...
     """
-    print(intro_text)
+    intro_text = intro_text.splitlines()
+    update_display(intro_text)
     input()
 
 
 def level_one_training():
     training_text = """
-    ─────────────────────────────────────────────
-             🏰 TRAINING: PAWN MOVEMENT 🏰
-    ─────────────────────────────────────────────
+ ▗▄▖  ▗▄▄▖ ▗▄▖ ▗▄▄▄ ▗▄▄▄▖▗▖  ▗▖▗▖  ▗▖
+▐▌ ▐▌▐▌   ▐▌ ▐▌▐▌  █▐▌   ▐▛▚▞▜▌ ▝▚▞▘ 
+▐▛▀▜▌▐▌   ▐▛▀▜▌▐▌  █▐▛▀▀▘▐▌  ▐▌  ▐▌  
+▐▌ ▐▌▝▚▄▄▖▐▌ ▐▌▐▙▄▄▀▐▙▄▄▖▐▌  ▐▌  ▐▌  
 
-             You are a PAWN. Your movement is limited, 
-             but every step forward brings you closer to 
-             greatness.
+    ────────────────────────
+    TRAINING: PAWN MOVEMENT
+    ────────────────────────
 
-        ┌────────────────────────────┐
-        │   MOVE OPTIONS:            │
-        │   🔹 Forward North (↑)     │
-        │   🔹 Capture Left  (↖)     │
-        │   🔹 Capture Right (↗)     │
-        └────────────────────────────┘
+      You are a PAWN. Your movement is limited, 
+      but every step forward brings you closer to 
+      greatness.
 
-         8 ⬜ ⬛ ⬜ ⬛ ⬜ ⬛ ⬜ ⬛ 
-         7 ⬛ ⬜ ⬛ ⬜ ⬛ ⬜ ⬛ ⬜ 
-         6 ⬜ ⬛ ⬜ ⬛ ⬜ ⬛ ⬜ ⬛ 
-         5 ⬛ ⬜ ⬛ ⬜ ⬛ ⬜ ⬛ ⬜ 
-         4 ⬜ ⬛ ⬜ ⬛ ⬜ ⬛ ⬜ ⬛ 
-         3 ⬛ ⬜ ⬛ ⬜ ⬛ ⬜ ⬛ ⬜ 
-         2 ⬜ ⬛ ⬜ ⬛ ⬜ ⬛ ⬜ ⬛ 
-         1 ⬛ ⬜ ⬛ ⬜ ⬛ ⬜ ⬛ ⬜ 
-           A  B  C  D  E  F  G  H
+    ┌────────────────────────────┐
+    │   MOVE OPTIONS:            │
+    │   * Forward North (↑)      │
+    │   * Capture Left  (↖)      │
+    │   * Capture Right (↗)      │
+    └────────────────────────────┘
 
     You can only move FORWARD unless you are capturing. 
     If an enemy piece is on the left or right diagonal, 
     you can attack!
 
-    ❗ IMPORTANT ❗
+    IMPORTANT
     - You cannot move backward.
     - You cannot capture straight ahead.
     - Your journey to the 8th rank starts NOW!
 
     ➡️ Press ENTER to continue...
     """
-    print(training_text)
+    training_text = training_text.splitlines()
+    update_display(training_text)
     input()
 
 
-def get_pawn_direction_choice():
+def get_pawn_direction_choice(game_map):
     """
     Ask the user to choose a valid direction for the pawn from a numbered list.
 
     :return: A string representing the chosen direction.
     """
-    print("Choose a direction for the pawn:")
-    print("1. North (Move forward)")
-    print("2. North-East (Capture right)")
-    print("3. North-West (Capture left)")
+    direction_menu = [
+        "Choose a direction for the pawn:",
+        "1. North (Move forward)",
+        "2. North-East (Capture right)",
+        "3. North-West (Capture left)"
+    ]
+
+    update_display(direction_menu, game_map)
 
     choice = input("Enter a number (1-3): ")
 
@@ -101,11 +112,11 @@ def assign_position_attributes(column):
     :param column: The column (file) index (0-7).
     :return: A tuple containing skill boost and health adjustment.
     """
-    if column in [0, 7]:
+    if column in [4, 11]:
         return "Safe Zone", 5, 10  # Slight skill boost, health +10
-    elif column in [1, 6]:  # Near corners (moderate risk)
+    elif column in [5, 10]:  # Near corners (moderate risk)
         return "Moderate Risk", 10, 5  # Moderate skill boost, health +5
-    elif column in [2, 5]:  # Middle edge (higher risk)
+    elif column in [6, 9]:  # Middle edge (higher risk)
         return "Risky", 15, 0  # More skill boost, no health change
     else:  # Columns 3 and 4 (most dangerous but rewarding)
         return "High Risk", 20, -5  # High skill boost, health -5
@@ -119,17 +130,20 @@ def place_pawn(player):
     :postcondition: Update the player's position, health, and knowledge based on the chosen location.
     """
     while True:
-        column = random.randint(0, 7)  # Random file (column)
-        location = (6, column)  # Row 6 (2nd rank)
-        file_letter = column_to_file(column)
+        column = random.randint(4, 11)  # Random file (column)
+        location = (25, column)  # Row 25 (2nd rank)
+        file_letter = column_to_file(column-4)
         zone, skill_boost, health_change = assign_position_attributes(column)
 
-        print(f"\nYour pawn is placed at Rank 2, File {file_letter} ({zone} area).")
-        print(f"- 🛠️ Skill Boost: {skill_boost}\n- ❤️ Health Change: {health_change}")
-
-        print("\nChoose an option:")
-        print("1️ Keep this position")
-        print("2️ Re-roll for a new position")
+        options_menu = [
+        f"Your pawn is placed at Rank 2, File {file_letter} ({zone} area).",
+        f"- 🛠️ Skill Boost: {skill_boost}",
+        f"- ❤️ Health Change: {health_change}",
+            "Choose an option:",
+            "1️ Keep this position",
+            "2️ Re-roll for a new position"
+        ]
+        update_display(options_menu)
 
         choice = input("Enter your choice (1 or 2): ").strip()
         if choice == "1":
@@ -151,49 +165,71 @@ def confirm_move(player, direction):
     :postcondition: Either allows or prevents movement based on conditions.
     :return: A boolean indicating whether the move is allowed.
     """
+    display_text =[]
     if direction == "north":
         event = random.randint(1, 5)
         if event == 1:
             print("🚧 The path is blocked. You must wait!")
+            time.sleep(2)
             return False
         elif event == 2:
-            print("⚠️ Moving forward will remove your protection but bring you closer to greatness!")
-            player["boldness"] += 1
+            display_text.append("⚠️ Moving forward will remove your protection but bring you closer to greatness!")
+        else:
+            return True
     elif direction in ["north_west", "north_east"]:
-        event = random.randint(1, 3)
+        event = random.randint(1, 5)
         if event == 1:
             print("⭕ No piece to capture, safe to move!")
             return False
         elif event == 2:
-            print("⚠️ The path might be dangerous, proceed with caution!")
-            player["boldness"] += 1
-        else:
+            display_text.append("⚠️ The path might put  dangerous, proceed with caution!")
+        elif event == 3:
             print("🚧 Blocked! You must wait!")
+            time.sleep(2)
             return False
+        else:
+            return True
 
-    print("Do you want to proceed?")
-    print("1️ Yes, move ahead!")
-    print("2️ No, reconsider!")
+    display_text += [
+        "Do you want to proceed?",
+        "1️ Yes, move ahead!",
+        "2️ No, reconsider!"
+    ]
+    update_display(display_text, player_position = player["position"])
     choice = input("Enter your choice (1 or 2): ").strip()
-    return choice == "1"
+    if choice == "1":
+        player["boldness"] += 1
+        return True
+    elif choice == "2":
+        player["boldness"] -= 1
 
 
 def run_level(player):
     level_one_intro()
     level_one_training()
+    game_map = setup_game_environment()
     place_pawn(player)
+    update_player_on_map(game_map, player["position"], None)
+    board_start = (19,4)
+
     while True:
-        print_map(8, 8, player["position"])
-        desired_move = get_pawn_direction_choice()
+
+        # update_display(health_msg.splitlines(), game_map)
+
+        if player["position"][0] == board_start[0]:  # Rank 8 reached
+            promote_player(player)
+            break
+        desired_move = get_pawn_direction_choice(game_map)
         if not desired_move:
             print("Please enter a valid move!")
             continue
         row = player["position"][0]
         col = player["position"][1]
 
-        new_position = move(8, row, col, desired_move)
+        new_position = move(board_start, row, col, desired_move)
         if confirm_move(player, desired_move):
+            update_player_on_map(game_map, new_position, player["position"])
             player["position"] = new_position
 
-
+    print_level_completion_message(1)
 
