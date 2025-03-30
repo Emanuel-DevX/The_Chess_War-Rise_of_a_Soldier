@@ -1,3 +1,4 @@
+import player_manager
 from utilities import *
 from map import *
 import random
@@ -79,7 +80,7 @@ def level_one_training():
     input()
 
 
-def get_pawn_direction_choice(game_map):
+def get_pawn_direction_choice():
     """
     Ask the user to choose a valid direction for the pawn from a numbered list.
 
@@ -92,7 +93,7 @@ def get_pawn_direction_choice(game_map):
         "3. North-West (Capture left)"
     ]
 
-    update_display(direction_menu, game_map)
+    update_display(direction_menu)
 
     choice = input("Enter a number (1-3): ")
 
@@ -150,6 +151,7 @@ def place_pawn(player):
             player["position"] = location
             player["health"] += health_change
             player["knowledge"].append(f"Started in a {zone} area")
+            player_manager.save_player(player)
             break
 
     print("✅ Final position set!")
@@ -180,6 +182,7 @@ def confirm_move(player, direction):
         event = random.randint(1, 5)
         if event == 1:
             print("⭕ No piece to capture, safe to move!")
+            time.sleep(2)
             return False
         elif event == 2:
             display_text.append("⚠️ The path might put  dangerous, proceed with caution!")
@@ -195,13 +198,16 @@ def confirm_move(player, direction):
         "1️ Yes, move ahead!",
         "2️ No, reconsider!"
     ]
-    update_display(display_text, player_position = player["position"])
+    update_display(display_text)
     choice = input("Enter your choice (1 or 2): ").strip()
     if choice == "1":
         player["boldness"] += 1
+        player_manager.save_player(player)
         return True
     elif choice == "2":
         player["boldness"] -= 1
+        player_manager.save_player(player)
+
 
 
 def run_level(player):
@@ -214,12 +220,10 @@ def run_level(player):
 
     while True:
 
-        # update_display(health_msg.splitlines(), game_map)
-
         if player["position"][0] == board_start[0]:  # Rank 8 reached
             promote_player(player)
             break
-        desired_move = get_pawn_direction_choice(game_map)
+        desired_move = get_pawn_direction_choice()
         if not desired_move:
             print("Please enter a valid move!")
             continue
@@ -230,6 +234,7 @@ def run_level(player):
         if confirm_move(player, desired_move):
             update_player_on_map(game_map, new_position, player["position"])
             player["position"] = new_position
-
+            player_manager.save_player(player)
+    update_display(["Yay!"])
     print_level_completion_message(1)
 
