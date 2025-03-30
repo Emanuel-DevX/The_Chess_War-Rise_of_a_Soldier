@@ -1,5 +1,7 @@
 import random
 
+from map import setup_game_environment, update_player_on_map
+
 
 def print_map(rows, column, player_loc):
     """
@@ -19,7 +21,7 @@ def print_map(rows, column, player_loc):
     >>> # 🏛️ 🏛️ 🏛️ 🏛️
     >>> # 🏛️       🏛️
     >>> # 🏛️    🔵 🏛️
-    >>> # 🏛️ 🏛️ 🏛️ 🏛️
+    >>> # 🏛 🏛️ 🏛️ 🏛️
     """
     rows += 1
     column += 1
@@ -28,7 +30,7 @@ def print_map(rows, column, player_loc):
     for row in range(-1, rows):
         for col in range(-1, column):
             if row == -1 or col == -1 or row == rows - 1 or col == rows - 1:
-                my_map += "🏛️ "
+                my_map += "⛩ "
             else:
                 if player_loc == (row, col):
                     my_map += "🔵 "
@@ -38,7 +40,7 @@ def print_map(rows, column, player_loc):
     print(my_map)
 
 
-def validate_move(board_size, row, col, direction):
+def validate_move(board_start, row, col, direction):
     """
     Validate if the character's proposed move stays within the boundaries of the board.
 
@@ -72,21 +74,23 @@ def validate_move(board_size, row, col, direction):
     >>> validate_move(8, 1, 1, 'south_west')
     True
     """
-    if direction == 'north' and row > 0:
+    board_start_row = board_start[0]
+    board_start_col = board_start[1]
+    if direction == 'north' and row > board_start_row:
         return True
-    elif direction == 'south' and row < board_size - 1:
+    elif direction == 'south' and row < board_start_row + 8:
         return True
-    elif direction == 'east' and col < board_size - 1:
+    elif direction == 'east' and col < board_start_col + 8:
         return True
-    elif direction == 'west' and col > 0:
+    elif direction == 'west' and col > board_start_row:
         return True
-    elif direction == 'north_east' and row > 0 and col < board_size - 1:
+    elif direction == 'north_east' and row > board_start_row and col < board_start_col + 8:
         return True
-    elif direction == 'north_west' and row > 0 and col > 0:
+    elif direction == 'north_west' and row > board_start_row and col > board_start_col:
         return True
-    elif direction == 'south_east' and row < board_size - 1 and col < board_size - 1:
+    elif direction == 'south_east' and row < board_start_row + 8 and col < board_start_col + 8:
         return True
-    elif direction == 'south_west' and row < board_size - 1 and col > 0:
+    elif direction == 'south_west' and row < board_start_row + 8 and col > board_start_col:
         return True
 
     return False
@@ -214,3 +218,34 @@ def print_level_completion_message(level):
         3: "👑 Magnificent! You have reached the pinnacle as an Overlord! Rule wisely."
     }
     print(messages.get(level, "🎉 Congratulations on your achievement!"))
+
+def print_game_map(game_map):
+    """Print the game map with row numbers"""
+
+    for row_number, row in enumerate(game_map):
+        print(f"{row_number:>100}", end="")
+        print("".join(row))
+
+def update_display(display_text, game_map = None, player = None):
+    health_msg = f"""
+                ┌─────────────┐
+                │❤️HEALTH: {player["health"]}│
+                │             │
+                └─────────────┘"""
+    print("\n"*100)
+    if not game_map:
+        game_map = setup_game_environment()
+        if player:
+            update_player_on_map(game_map, player["position"])
+
+    my_text =[]
+    display_len = len(display_text)
+    if display_len < 30:
+        my_text = ["" for _ in range(30 - display_len)]
+    for line in display_text:
+        my_text.append(line.strip())
+
+    for row_number, row in enumerate(game_map):
+        print(f"{my_text[row_number]:<100}", end="")
+        print("".join(row))
+
