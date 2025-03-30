@@ -1,5 +1,6 @@
 import random
 
+import player_manager
 from map import setup_game_environment, update_player_on_map
 
 
@@ -84,13 +85,13 @@ def validate_move(board_start, row, col, direction):
         return True
     elif direction == 'west' and col > board_start_row:
         return True
-    elif direction == 'north_east' and row > board_start_row and col < board_start_col + 8:
+    elif direction == 'north_east' and row > board_start_row and col < board_start_col + 7:
         return True
     elif direction == 'north_west' and row > board_start_row and col > board_start_col:
         return True
-    elif direction == 'south_east' and row < board_start_row + 8 and col < board_start_col + 8:
+    elif direction == 'south_east' and row < board_start_row + 7 and col < board_start_col + 7:
         return True
-    elif direction == 'south_west' and row < board_start_row + 8 and col > board_start_col:
+    elif direction == 'south_west' and row < board_start_row + 7 and col > board_start_col:
         return True
 
     return False
@@ -226,22 +227,25 @@ def print_game_map(game_map):
         print(f"{row_number:>100}", end="")
         print("".join(row))
 
-def update_display(display_text, game_map = None, player = None):
+def update_display(display_text):
+
+    print("\n"*100)
+    game_map = setup_game_environment()
+    player = player_manager.load_player()
+    update_player_on_map(game_map, player["position"])
+    player_h = player["health"]
+    player_g = player["gold"]
     health_msg = f"""
                 ┌─────────────┐
-                │❤️HEALTH: {player["health"]}│
-                │             │
+                │❤️HEALTH: {player_h:03d}│
+                │  💰GOLD: {player_g:03d}│
                 └─────────────┘"""
-    print("\n"*100)
-    if not game_map:
-        game_map = setup_game_environment()
-        if player:
-            update_player_on_map(game_map, player["position"])
 
-    my_text =[]
+    game_map += [line.strip() for line in health_msg.splitlines()]
+    my_text = []
     display_len = len(display_text)
-    if display_len < 30:
-        my_text = ["" for _ in range(30 - display_len)]
+    if display_len < 35:
+        my_text += ["" for _ in range(35 - display_len)]
     for line in display_text:
         my_text.append(line.strip())
 
