@@ -1,8 +1,19 @@
+from utilities import *
+
+
 def level_two_intro():
     intro_text = """
-    ───────────────────────────────────────
-       🔥 LEVEL 2: THE BISHOP'S ASCENT 🔥
-    ───────────────────────────────────────
+
+██╗     ███████╗██╗   ██╗███████╗██╗         ████████╗██╗    ██╗ ██████╗ 
+██║     ██╔════╝██║   ██║██╔════╝██║         ╚══██╔══╝██║    ██║██╔═══██╗
+██║     █████╗  ██║   ██║█████╗  ██║            ██║   ██║ █╗ ██║██║   ██║
+██║     ██╔══╝  ╚██╗ ██╔╝██╔══╝  ██║            ██║   ██║███╗██║██║   ██║
+███████╗███████╗ ╚████╔╝ ███████╗███████╗       ██║   ╚███╔███╔╝╚██████╔╝
+╚══════╝╚══════╝  ╚═══╝  ╚══════╝╚══════╝       ╚═╝    ╚══╝╚══╝  ╚═════╝ 
+
+    ──────────────────────────────────
+        LEVEL 2: THE BISHOP'S ASCENT 
+    ──────────────────────────────────
 
     The battlefield is no longer a chaotic mess of warriors clashing head-on.  
     It is a game of sight, angles, and precision. You have been chosen for  
@@ -15,54 +26,43 @@ def level_two_intro():
     with speed and grace.
 
     ⚔️ **New Movement Abilities:**
-      🔹 The Bishop moves **one step diagonally** per turn.
-      🔹 You must think ahead—your path is limited, but your strategy is key.
-      🔹 Enemies lurk in the shadows. Position yourself wisely to survive.
+      * The Bishop moves **one step diagonally** per turn.
+      * You must think ahead—your path is limited, but your strategy is key.
+      * Enemies lurk in the shadows. Position yourself wisely to survive.
 
     The path to mastery is not about speed—it is about **seeing what others do not**.  
     Adapt, or be eliminated.
 
     ➡️ Press ENTER to begin your trial...
     """
-    print(intro_text)
+    update_display([line.strip() for line in intro_text.splitlines()])
     input()
 
 
 def level_two_training():
     training_text = """
-    ────────────────────────────────────────────
-              🏹 LEVEL 2 TRAINING 🏹
-    ────────────────────────────────────────────
+    ────────────────
+    LEVEL 2 TRAINING 
+    ────────────────
 
     As a **bishop**, your movement is now limited to the color of your starting square.  
     If you begin on a **dark square**, you will always remain on dark squares.  
     If you start on a **light square**, you will always move on light squares.
-    
-        ┌────────────────────────────┐
-        │   MOVE OPTIONS:            │
-        │     🔹 North West   (↖)    │
-        │     🔹 North East   (↗)    │
-        │     🔹 South West   (↙)    │
-        │     🔹 South East   (↘)    │
-        └────────────────────────────┘
 
-         8 ⬜ ⬛ ⬜ ⬛ ⬜ ⬛ ⬜ ⬛ 
-         7 ⬛ ⬜ ⬛ ⬜ ⬛ ⬜ ⬛ ⬜ 
-         6 ⬜ ⬛ ⬜ ⬛ ⬜ ⬛ ⬜ ⬛ 
-         5 ⬛ ⬜ ⬛ ⬜ ⬛ ⬜ ⬛ ⬜ 
-         4 ⬜ ⬛ ⬜ ⬛ ⬜ ⬛ ⬜ ⬛ 
-         3 ⬛ ⬜ ⬛ ⬜ ⬛ ⬜ ⬛ ⬜ 
-         2 ⬜ ⬛ ⬜ ⬛ ⬜ ⬛ ⬜ ⬛ 
-         1 ⬛ ⬜ ⬛ ⬜ ⬛ ⬜ ⬛ ⬜ 
-           A  B  C  D  E  F  G  H
-    
-    
+        ┌───────────────────────────┐
+        │   MOVE OPTIONS:           │
+        │     * North West   (↖)    │
+        │     * North East   (↗)    │
+        │     * South West   (↙)    │
+        │     * South East   (↘)    │
+        └───────────────────────────┘
+
     ⚔️ **Movement Rules:**
-      🔹 You can only travel on **your color** (dark or light).
-      🔹 No jumping over obstacles.
-      🔹 Capture enemies by stepping onto their position.
+      * You can only travel on **your color** (dark or light).
+      * No jumping over obstacles.
+      * Capture enemies by stepping onto their position.
 
-    📜 **Training Drill:**
+    **Training Drill:**
       - Try moving **diagonally** to an empty square of your color.
       - Capture the target dummy placed diagonally from you.
       - Be mindful of the battlefield—some paths may be blocked.
@@ -72,45 +72,90 @@ def level_two_training():
 
     ➡️ Press ENTER to start training...
     """
-    print(training_text)
+    update_display(training_text.splitlines())
     input()
 
 
 def spy_mission():
     mission_text = """
-    ──────────────────────────────────────────────
-                MISSION: FIND THE SPY
-    ──────────────────────────────────────────────
+    ─────────────────────
+    MISSION: FIND THE SPY
+    ─────────────────────
 
-    Your mission, brave soldier, is to uncover the traitor among your ranks—the spy. 
+    Your mission, brave soldier, is to uncover the traitor among your ranks —the spy. 
     The spy has been planting ambushes all over the land to trap unsuspecting soldiers like you. 
     Your goal is to navigate the battlefield, avoiding traps, and figure out who the spy is. 
 
-    The spy could be anyone. Look for unusual patterns in their movement or actions—anything out of place.
+    The spy could be anyone. Look for unusual patterns in their movement.
 
     Here are your instructions:
 
-    1. **Move with caution**: The land is dangerous, and ambushes lie hidden. 
+    1. Move with caution: The land is dangerous, and ambushes lie hidden. 
        Watch your surroundings carefully and move one step at a time.
-    2. **Spy Indicators**: Keep an eye on any strange behavior, like soldiers moving away from their posts or odd paths 
-        that don't align with normal patrol routes.
-    3. **Avoid Ambushes**: You may stumble upon traps. If you suspect a trap, **don't engage immediately**. 
+    2. Spy Indicators: Keep an eye on any strange behavior, like soldiers moving away 
+    from their posts or odd paths that don't align with normal patrol routes.
+    3. Avoid Ambushes: You may stumble upon traps. If you suspect a trap, don't engage immediately. 
         Look for safer paths and be cautious when moving into enemy territory.
     4. **Find the Spy**: Use your instincts to determine who among your allies may be the spy. 
        They might try to blend in but their actions will give them away.
 
-    ❗ **Warning**: The spy may also attempt to mislead you by feigning innocence or offering false directions. 
+    !Warning: The spy may also attempt to mislead you by feigning innocence. 
 
     Once you believe you've identified the spy, report back to your commander. 
     If you're wrong, the enemy might use your mistake against you.
 
     ➡️ Press ENTER to begin your search for the spy...
     """
-    print(mission_text)
+    update_display(mission_text.splitlines())
     input()
 
 
-level_two_intro()
-level_two_training()
-spy_mission()
 
+def place_bishop(player, board_start):
+    """
+    Let the player choose a starting position for their bishop.
+
+    :param player: A dictionary representing the player's attributes.
+    :param board_start: A tuple representing the top-left corner of the board.
+    :postcondition: Update the player's position and attributes.
+    """
+
+    update_display(["Choose your starting position (light or dark square):"])
+
+    while True:
+        # Let player choose between light and dark square bishop
+        choice = input("Enter 'L' for light square ⬜ or 'D' for dark square ⬛: ").upper().strip()
+
+        if choice not in ['L', 'D']:
+            print("Invalid choice. Please enter 'L' or 'D'.")
+            continue
+
+        # Determine starting positions based on choice
+        if choice == 'L':
+            position = (board_start[0] + 7, board_start[1] + 2)  # c1 position
+            player["bishop_color"] = "light"
+            player["knowledge"].append("Light square bishop - strength on open positions")
+        else:
+            position = (board_start[0] + 7, board_start[1] + 5)  # f1 position
+            player["bishop_color"] = "dark"
+            player["knowledge"].append("Dark square bishop - strength in closed positions")
+
+        player["position"] = position
+        player["health"] += 10  # Bishop gets health boost
+        player_manager.save_player(player)
+
+
+        print("✅ Bishop placed on " + ("light" if choice == 'L' else "dark") + " square!")
+        time.sleep(2)
+        break
+
+
+
+def run_level(player):
+    level_two_intro()
+    level_two_training()
+    spy_mission()
+    game_map = setup_game_environment()
+    board_start = [17, 19]
+    place_bishop(player, board_start)
+    update_player_on_map(game_map, player["position"])
