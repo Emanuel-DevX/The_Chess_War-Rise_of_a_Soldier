@@ -144,10 +144,47 @@ def place_bishop(player, board_start):
         player["health"] += 10  # Bishop gets health boost
         player_manager.save_player(player)
 
-
+        update_display([])
         print("✅ Bishop placed on " + ("light" if choice == 'L' else "dark") + " square!")
         time.sleep(2)
         break
+
+
+def generate_clues():
+    """
+    Generate a list of clues for the spy mission.
+
+    :return: List of clues
+    """
+    suspects = ["The Knight", "The Rook", "The Queen", "The Pawn"]
+    locations = ["North Tower", "Eastern Gardens", "Royal Chambers", "Training Grounds"]
+    behaviors = ["moving at night", "carrying secret messages", "meeting with enemies", "avoiding certain areas"]
+
+    spy_index = random.randint(0, len(suspects) - 1)
+    spy = suspects[spy_index]
+
+    clues = []
+    for i in range(len(suspects)):
+        if i == spy_index:
+            # Genuine clue about the spy
+            clue = f"{suspects[i]} was seen {random.choice(behaviors)} near the {random.choice(locations)}."
+            clues.append((clue, True))  # True indicates this is a genuine clue
+        else:
+            # Red herring
+            clue = f"{suspects[i]} has been acting suspiciously lately."
+            clues.append((clue, False))  # False indicates this is a red herring
+
+    # Add some general clues
+    general_clues = [
+        (f"Someone has been spotted {random.choice(behaviors)}.", True),
+        (f"Unusual activity reported in the {random.choice(locations)}.", True),
+        (f"Guards found evidence of betrayal near the {random.choice(locations)}.", True)
+    ]
+
+    clues.extend(general_clues)
+    random.shuffle(clues)
+
+    return clues, spy
 
 
 
@@ -159,3 +196,5 @@ def run_level(player):
     board_start = [17, 19]
     place_bishop(player, board_start)
     update_player_on_map(game_map, player["position"])
+    clues, true_spy = generate_clues()
+
