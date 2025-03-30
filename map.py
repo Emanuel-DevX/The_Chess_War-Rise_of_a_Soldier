@@ -89,3 +89,40 @@ def create_level_walls():
             generate_level_walls(17, 19) +
             generate_level_walls(5, 15)
     )
+
+
+def place_chess_board(game_map, start_row=2, start_col=2):
+    """Place chess board on the game map"""
+    chess_board = create_chess_board()
+    for row_offset in range(8):
+        for col_offset in range(8):
+            game_map[start_row + row_offset][start_col + col_offset] = chess_board[row_offset][col_offset]
+    add_chess_board_labels(game_map, start_row, start_col)
+
+def print_game_map(game_map):
+    """Print the game map with row numbers"""
+    for row_number, row in enumerate(game_map):
+        print(f"{row_number:>100}", end="")
+        print("".join(row))
+
+
+def setup_game_environment():
+
+    game_map = initialize_game_map()
+
+    place_tiles_on_map(game_map, create_forest_tiles(), "🌲 ")
+    place_tiles_on_map(game_map, create_fire_tiles(), "🔥 ")
+
+    place_tiles_on_map(game_map, create_level_interiors(), "   ")
+    place_tiles_on_map(game_map, create_level_walls(), "🏛️ ")
+
+    game_map[12][15] = "🔵 "
+
+    place_chess_board(game_map)
+
+    return game_map
+
+
+if __name__ == "__main__":
+    game_map = setup_game_environment()
+    print_game_map(game_map)
