@@ -106,6 +106,12 @@ def print_game_map(game_map):
         print("".join(row))
 
 
+def update_player_on_map(game_map, new_position, old_position=None):
+    game_map[new_position[0]][new_position[1]] = "🔵 "
+    if old_position:
+        game_map[old_position[0]][old_position[1]] = "   "
+
+
 def setup_game_environment():
 
     game_map = initialize_game_map()
@@ -116,7 +122,6 @@ def setup_game_environment():
     place_tiles_on_map(game_map, create_level_interiors(), "   ")
     place_tiles_on_map(game_map, create_level_walls(), "🏛️ ")
 
-    game_map[12][15] = "🔵 "
 
     place_chess_board(game_map)
 
