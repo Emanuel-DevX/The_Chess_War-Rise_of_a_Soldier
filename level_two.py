@@ -187,6 +187,33 @@ def generate_clues():
     return clues, spy
 
 
+def get_bishop_move_choice():
+    """
+    Ask the user to choose a valid direction for the bishop from a numbered list.
+
+    :return: A string representing the chosen direction.
+    """
+    direction_menu = [
+        "Choose a direction for the bishop:",
+        "1. North-East (↗)",
+        "2. North-West (↖)",
+        "3. South-East (↘)",
+        "4. South-West (↙)"
+    ]
+
+    update_display(direction_menu)
+
+    choice = input("Enter a number (1-4): ")
+
+    direction_map = {
+        '1': 'north_east',
+        '2': 'north_west',
+        '3': 'south_east',
+        '4': 'south_west'
+    }
+
+    return direction_map.get(choice, None)
+
 
 def run_level(player):
     level_two_intro()
@@ -197,4 +224,23 @@ def run_level(player):
     place_bishop(player, board_start)
     update_player_on_map(game_map, player["position"])
     clues, true_spy = generate_clues()
+    traps = set_traps(game_map, board_start)
+    moves_taken = 0
+    clues_found = 0
+    max_moves = 20
+    if "movement_points" not in player:
+        player["movement_points"] = 10
+
+    while moves_taken < max_moves and player["health"] > 0:
+        status_message = [
+            f"Moves taken: {moves_taken}/{max_moves}",
+            f"Health: {player['health']}",
+            f"Clues found: {clues_found}/{len(clues)}",
+            f"Movement points: {player['movement_points']}",
+            "Your goal: Find the spy while avoiding traps!"
+        ]
+        update_display(status_message)
+        desired_move = get_bishop_move_choice()
+        current_pos = player["position"]
+        new_position = move(board_start, current_pos[0], current_pos[1], desired_move)
 
