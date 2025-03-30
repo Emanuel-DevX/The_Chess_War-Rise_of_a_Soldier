@@ -215,6 +215,72 @@ def get_bishop_move_choice():
     return direction_map.get(choice, None)
 
 
+def discover_clue(player, clues):
+    """
+    Discover a new clue about the spy.
+
+    :param player: Player dictionary
+    :param clues: List of available clues
+    :return: Discovered clue or None if no clues left
+    """
+    if not clues:
+        return None
+
+    clue, is_genuine = clues.pop(0)
+    player["clues"] = player.get("clues", []) + [clue]
+
+    clue_message = [
+        "📜 You discovered a clue!",
+        clue
+    ]
+
+    if random.random() < 0.2 and is_genuine:
+        # Add an insight for genuine clues (20% chance)
+        clue_message.append("Your intuition tells you this clue seems important.")
+
+    return clue_message
+
+
+def accuse_spy(suspects, true_spy, player):
+    """
+    Allow player to accuse who they think is the spy.
+
+    :param suspects: List of suspects
+    :param true_spy: The actual spy
+    :param player: Player dictionary
+    :return: True if correct accusation, False otherwise
+    """
+    accusation_menu = ["Who do you think is the spy?"]
+    for i, suspect in enumerate(suspects, 1):
+        accusation_menu.append(f"{i}. {suspect}")
+
+    update_display(accusation_menu)
+
+    while True:
+        choice = input(f"Enter a number (1-{len(suspects)}): ")
+        try:
+            index = int(choice) - 1
+            if 0 <= index < len(suspects):
+                accused = suspects[index]
+                if accused == true_spy:
+                    update_display(["You've uncovered the spy! Your mission is a success."])
+                    player["reputation"] = player.get("reputation", 0) + 20
+                    return True
+                else:
+                    update_display([
+                        f"You wrongly accused {accused}!",
+                        f"The true spy was {true_spy}.",
+                        "Your reputation has suffered."
+                    ])
+                    player["reputation"] = player.get("reputation", 0) - 10
+                    return False
+            else:
+                print("Invalid choice. Please try again.")
+        except ValueError:
+            print("Please enter a valid number.")
+
+
+
 def run_level(player):
     level_two_intro()
     level_two_training()
@@ -240,7 +306,49 @@ def run_level(player):
             "Your goal: Find the spy while avoiding traps!"
         ]
         update_display(status_message)
+
         desired_move = get_bishop_move_choice()
+        if not desired_move:
+            update_display(["Invalid move for a bishop! Try again."])
+            continue
         current_pos = player["position"]
         new_position = move(board_start, current_pos[0], current_pos[1], desired_move)
+        if player["movement_points"] <= 0:
+            update_display(["You're out of movement points! Game over."])
+            break
+        player["movement_points"] -= 1
+        update_player_on_map(game_map, new_position, current_pos)
+        player["position"] = new_position
+
+        if check_for_trap(new_position, traps, player):
+            if player["health"] <= 0:
+                update_display(["You died from trap injuries! Game over."])
+                break
+        if random.random() < 0.3 and clues:  # 30% chance to find clue
+            clue_message = discover_clue(player, clues)
+            if clue_message:
+                update_display(clue_message)
+                clues_found += 1
+                time.sleep(2)
+        if random.random() < 0.2:  # 20% chance for random encounter
+            event_message = encounter_event(player, game_map)
+            update_display(["Event: " + event_message])
+            time.sleep(2)
+
+        # Save player state
+        player_manager.save_player(player)
+        moves_taken += 1
+        # Option to accuse after finding at least 3 clues
+        if clues_found >= 3 and random.random() < 0.3:
+            update_display(["You have enough information to make an accusation."])
+            accusation_choice = input("Do you want to accuse someone now? (y/n): ").lower()
+            if accusation_choice == 'y':
+                suspects = ["The Knight", "The Rook", "The Queen", "The Pawn"]
+                success = accuse_spy(suspects, true_spy, player)
+                if success:
+                    print_level_completion_message(2)
+                    return
+                else:
+                    # Continue but with a penalty
+                    max_moves -= 3
 
