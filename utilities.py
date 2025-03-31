@@ -1,5 +1,4 @@
 import random
-from display_manager import update_display
 
 
 def validate_move(board_start, row, col, direction):
@@ -177,8 +176,8 @@ def print_level_completion_message(level):
     """
     messages = {
         1: ("🎉 Congratulations! You have completed Level 1! Your journey as a Bishop begins."
-            "🔱 Your pawn has been promoted to a Bishop!" ),
-        2: ("🎉 Well done! Level 2 completed! The power of the Rook is now yours." 
+            "🔱 Your pawn has been promoted to a Bishop!"),
+        2: ("🎉 Well done! Level 2 completed! The power of the Rook is now yours."
             "🏰 Your Bishop has been promoted to a Rook!"),
         3: ("👑 Magnificent! You have reached the pinnacle as an Overlord! Rule wisely."
             "👑 The Rook, now Overlord, enforces its rule from the Obsidian Tower!")
@@ -226,13 +225,12 @@ def check_for_trap(position, traps, player):
             f"You take {damage} damage.",
             f"Remaining health: {player['health']}"
         ]
-        update_display(trap_message, save_text=True)
 
         # Add to player knowledge
         player["knowledge"].append("Discovered trap location")
 
-        return True
-    return False
+        return True, trap_message
+    return False,
 
 
 def encounter_event(player):
