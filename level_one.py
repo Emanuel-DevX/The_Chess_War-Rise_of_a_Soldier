@@ -1,6 +1,7 @@
-import player_manager
 from utilities import *
 from map import *
+import player_manager
+from display_manager import update_display
 import random
 import time
 
@@ -166,7 +167,7 @@ def confirm_move(player, direction):
     if direction == "north":
         event = random.randint(1, 5)
         if event == 1:
-            update_display(["🚧 The path is blocked. You must wait!"], save_text=True)
+            update_display(["The path is blocked. You must wait!"], save_text=True)
             return False
         elif event == 2:
             display_text.append("⚠️ Moving forward will remove your protection but bring you closer to greatness!")
@@ -180,7 +181,7 @@ def confirm_move(player, direction):
         elif event == 2:
             display_text.append("⚠️ The path might put  dangerous, proceed with caution!")
         elif event == 3:
-            print("🚧 Blocked! You must wait!")
+            print("Blocked! You must wait!")
             time.sleep(2)
             return False
         else:
