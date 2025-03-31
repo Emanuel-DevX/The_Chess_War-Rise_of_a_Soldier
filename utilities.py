@@ -1,9 +1,7 @@
 import random
 import time
+from display_manager import update_display
 
-import player_manager
-from map import setup_game_environment, update_player_on_map
-from player_manager import save_player
 
 
 def print_map(rows, column, player_loc):
@@ -96,6 +94,7 @@ def validate_move(board_start, row, col, direction):
     elif direction == 'south_west' and row < board_start_row + 7 and col > board_start_col:
         return True
 
+    update_display(["Invalid move for a bishop! Try again."], save_text=True)
     return False
 
 
@@ -223,40 +222,14 @@ def print_level_completion_message(level):
     }
     print(messages.get(level, "🎉 Congratulations on your achievement!"))
 
-def print_game_map(game_map):
-    """Print the game map with row numbers"""
+# def print_game_map(game_map):
+#     """Print the game map with row numbers"""
+#
+#     for row_number, row in enumerate(game_map):
+#         print(f"{row_number:>100}", end="")
+#         print("".join(row))
 
-    for row_number, row in enumerate(game_map):
-        print(f"{row_number:>100}", end="")
-        print("".join(row))
 
-def update_display(display_text):
-
-    print("\n"*50)
-    game_map = setup_game_environment()
-    player = player_manager.load_player()
-    if player["position"] != [0,0]:
-        update_player_on_map(game_map, player["position"])
-    player_h = player["health"]
-    player_g = player["gold"]
-    health_msg = f"""
-                ┌─────────────┐
-                │❤️HEALTH: {player_h:03d}│
-                │  💰GOLD: {player_g:03d}│
-                └─────────────┘"""
-
-    game_map += [line.strip() for line in health_msg.splitlines()]
-    my_text = []
-    display_len = len(display_text)
-    if display_len < 30:
-        my_text += ["" for _ in range(30 - display_len)]
-    for line in display_text:
-        my_text.append(line.strip())
-    my_text += ["" for _ in range(10)]
-
-    for row_number, row in enumerate(game_map):
-        print(f"{my_text[row_number]:<100}", end="")
-        print("".join(row))
 
 
 
@@ -300,8 +273,7 @@ def check_for_trap(position, traps, player):
             f"You take {damage} damage.",
             f"Remaining health: {player['health']}"
         ]
-        update_display(trap_message)
-        time.sleep(2)
+        update_display(trap_message, save_text=True)
 
         # Add to player knowledge
         player["knowledge"].append("Discovered trap location")
