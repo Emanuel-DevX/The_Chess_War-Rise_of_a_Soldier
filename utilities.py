@@ -56,7 +56,7 @@ def validate_move(board_start, row, col, direction):
     return False
 
 
-def move(board_size, row, col, direction):
+def move(row, col, direction):
     """
     Move the character on the board according to the desired direction, if valid.
 
@@ -74,36 +74,35 @@ def move(board_size, row, col, direction):
                     If the move is invalid, the character remains in the current position.
     :return: A tuple (new_row, new_col) representing the character's new position.
 
-    >>> move(8, 7, 3, 'north')
+    >>> move(7, 3, 'north')
     (6, 3)
-    >>> move(8, 0, 0, 'west')
-    (0, 0)
-    >>> move(8, 4, 4, 'north_east')
+    >>> move(0, 0, 'east')
+    (0, 1)
+    >>> move(4, 4, 'north_east')
     (3, 5)
-    >>> move(8, 1, 1, 'south_west')
+    >>> move(1, 1, 'south_west')
     (2, 0)
     """
-    if validate_move(board_size, row, col, direction):
-        if direction == 'north':
-            row -= 1
-        elif direction == 'south':
-            row += 1
-        elif direction == 'east':
-            col += 1
-        elif direction == 'west':
-            col -= 1
-        elif direction == 'north_east':
-            row -= 1
-            col += 1
-        elif direction == 'north_west':
-            row -= 1
-            col -= 1
-        elif direction == 'south_east':
-            row += 1
-            col += 1
-        elif direction == 'south_west':
-            row += 1
-            col -= 1
+    if direction == 'north':
+        row -= 1
+    elif direction == 'south':
+        row += 1
+    elif direction == 'east':
+        col += 1
+    elif direction == 'west':
+        col -= 1
+    elif direction == 'north_east':
+         row -= 1
+         col += 1
+    elif direction == 'north_west':
+         row -= 1
+         col -= 1
+    elif direction == 'south_east':
+         row += 1
+         col += 1
+    elif direction == 'south_west':
+         row += 1
+         col -= 1
     return row, col
 
 
