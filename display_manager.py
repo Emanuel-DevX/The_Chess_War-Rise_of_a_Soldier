@@ -1,10 +1,26 @@
 from colorama import Fore, Style
-import re
-import json
+import re, json, time
 from map import setup_game_environment, update_player_on_map
 from player_manager import load_player, player_status
 
 FILE_NAME = "display_text.json"
+
+
+def loading_screen():
+    load_msg = """
+
+    ██╗      ██████╗  █████╗ ██████╗ ██╗███╗   ██╗ ██████╗       
+    ██║     ██╔═══██╗██╔══██╗██╔══██╗██║████╗  ██║██╔════╝       
+    ██║     ██║   ██║███████║██║  ██║██║██╔██╗ ██║██║  ███╗      
+    ██║     ██║   ██║██╔══██║██║  ██║██║██║╚██╗██║██║   ██║      
+    ███████╗╚██████╔╝██║  ██║██████╔╝██║██║ ╚████║╚██████╔╝██╗██╗
+    ╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚═════╝ ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝╚═╝
+
+    """
+    print(load_msg)
+    for _ in range(90):
+        print("██", end="")
+        time.sleep(0.1)
 
 
 def load_display_text():
@@ -24,12 +40,11 @@ def save_display_text(messages):
 
 # Append new message and manage length
 def update_display_text(new_message, max_len, color=Fore.GREEN, save_text=False, colored=True):
-
     messages = load_display_text() + [""]
 
     if save_text and new_message:
-        messages = [msg for msg in messages[:] if msg != "=" * 75]
-        messages.append("="*75)
+        messages = [msg for msg in messages[:] if msg != "=" * 80]
+        messages.append("=" * 80)
 
     if colored:
         colored_messages = [f"{color}{msg}{Style.RESET_ALL}" for msg in new_message]
@@ -51,7 +66,6 @@ def make_status_box(status_message):
     border_top = "┌" + "─" * (max_length + 2) + "┐"
     border_bottom = "└" + "─" * (max_length + 2) + "┘"
 
-
     # Format each line to fit the box
     formatted_lines = [f"│ {line.ljust(max_length)} │" for line in status_message]
 
@@ -60,11 +74,10 @@ def make_status_box(status_message):
 
 
 def update_display(display_text, save_text=False, status=True):
-
-    print("\n"*20)
+    print("\n" * 20)
     game_map = setup_game_environment()
     player = load_player()
-    if player["position"] != [0,0]:
+    if player["position"] != [0, 0]:
         update_player_on_map(game_map, player["position"])
     status_box = make_status_box(player_status())
     status_len = len(status_box)
