@@ -38,17 +38,12 @@ def level_one_intro():
     ➡️ Press ENTER to begin your journey...
     """
     intro_text = intro_text.splitlines()
-    update_display(intro_text)
+    update_display(intro_text, status=False)
     input()
 
 
 def level_one_training():
     training_text = """
- ▗▄▖  ▗▄▄▖ ▗▄▖ ▗▄▄▄ ▗▄▄▄▖▗▖  ▗▖▗▖  ▗▖
-▐▌ ▐▌▐▌   ▐▌ ▐▌▐▌  █▐▌   ▐▛▚▞▜▌ ▝▚▞▘ 
-▐▛▀▜▌▐▌   ▐▛▀▜▌▐▌  █▐▛▀▀▘▐▌  ▐▌  ▐▌  
-▐▌ ▐▌▝▚▄▄▖▐▌ ▐▌▐▙▄▄▀▐▙▄▄▖▐▌  ▐▌  ▐▌  
-
     ────────────────────────
     TRAINING: PAWN MOVEMENT
     ────────────────────────
@@ -76,7 +71,7 @@ def level_one_training():
     ➡️ Press ENTER to continue...
     """
     training_text = training_text.splitlines()
-    update_display(training_text)
+    update_display(training_text, status=False)
     input()
 
 
@@ -171,8 +166,7 @@ def confirm_move(player, direction):
     if direction == "north":
         event = random.randint(1, 5)
         if event == 1:
-            print("🚧 The path is blocked. You must wait!")
-            time.sleep(2)
+            update_display(["🚧 The path is blocked. You must wait!"], save_text=True)
             return False
         elif event == 2:
             display_text.append("⚠️ Moving forward will remove your protection but bring you closer to greatness!")
@@ -181,8 +175,7 @@ def confirm_move(player, direction):
     elif direction in ["north_west", "north_east"]:
         event = random.randint(1, 5)
         if event == 1:
-            print("⭕ No piece to capture, safe to move!")
-            time.sleep(2)
+            update_display(["No piece to capture, safe to move!"], save_text=True)
             return False
         elif event == 2:
             display_text.append("⚠️ The path might put  dangerous, proceed with caution!")
@@ -193,12 +186,13 @@ def confirm_move(player, direction):
         else:
             return True
 
-    display_text += [
+    options = [
         "Do you want to proceed?",
         "1️ Yes, move ahead!",
         "2️ No, reconsider!"
     ]
-    update_display(display_text)
+    update_display(display_text, save_text=True)
+    update_display(options)
     choice = input("Enter your choice (1 or 2): ").strip()
     if choice == "1":
         player["boldness"] += 1
@@ -218,7 +212,7 @@ def run_level(player):
     update_player_on_map(game_map, player["position"], None)
     board_start = (19,4)
 
-    while True:
+    while player["movement_points"] >= 0:
 
         if player["position"][0] == board_start[0]:  # Rank 8 reached
             promote_player(player)
@@ -234,6 +228,8 @@ def run_level(player):
         if confirm_move(player, desired_move):
             update_player_on_map(game_map, new_position, player["position"])
             player["position"] = new_position
+            player["moves_taken"] += 1
+            player["movement_points"]-= 1
             player_manager.save_player(player)
     update_display(["Yay!"])
     print_level_completion_message(1)
