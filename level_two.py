@@ -1,8 +1,8 @@
-import random
-from utilities import *
 from display_manager import update_display
 from map import update_player_on_map, setup_game_environment
 from player_manager import save_player
+from utilities import *
+import random
 
 
 def level_two_intro():
@@ -303,8 +303,7 @@ def initialize_level(player):
     return game_map, board_start, clues, true_spy, traps
 
 
-
-def handle_random_events(player, clues, game_map):
+def handle_random_events(player, clues):
     if random.random() < 0.3 and clues:  # 30% chance to find clue
         clue_message = discover_clue(player, clues)
         if clue_message:
@@ -313,7 +312,7 @@ def handle_random_events(player, clues, game_map):
             return
 
     if random.random() < 0.2:  # 20% chance for random encounter
-        event_message = encounter_event(player, game_map)
+        event_message = encounter_event(player)
         update_display(["Event: " + event_message], save_text=True)
 
 
@@ -324,9 +323,7 @@ def handle_accusation(player, true_spy):
     if accusation_choice == 'y':
         suspects = ["The Knight", "The Rook", "The Queen", "The Pawn"]
         success = accuse_spy(suspects, true_spy, player)
-        if success:
-            print_level_completion_message(2)
-            return True
+        return success
 
     return False
 
@@ -346,30 +343,42 @@ def run_level(player):
             update_display(["Invalid move for a bishop! Try again."])
             continue
 
-
         current_pos = player["position"]
-        new_position = move(board_start, current_pos[0], current_pos[1], desired_move)
+        if not validate_move(board_start, current_pos[0], current_pos[1], desired_move):
+            update_display(["Invalid move! Try again."], save_text=True)
+            continue
+
+        new_position = move(current_pos[0], current_pos[1], desired_move)
         player["movement_points"] -= 1  # Deduct after check but before actual move
         if player["movement_points"] <= 0:
+            update_display([])
             break
         update_player_on_map(game_map, new_position, current_pos)
         player["position"] = new_position
-        if check_for_trap(new_position, traps, player):
+
+        there_is_trap = check_for_trap(new_position, traps, player)
+
+        if there_is_trap[0]:
+            trap_message = there_is_trap[1]
+            update_display(trap_message, save_text=True)
             player["moves_taken"] += 1
             save_player(player)
             continue
 
-        handle_random_events(player, clues, game_map)
+        handle_random_events(player, clues)
         player["moves_taken"] += 1
         save_player(player)
 
         if player["clues_found"] >= 3 and random.random() < 0.3:
             if handle_accusation(player, true_spy):
+                promote_player(player)
+                print_level_completion_message(2)
                 return  # Level completed successfully
             max_moves -= 3  # Penalty for wrong accusation_moves -= 3
             player["max_moves"] = max_moves
             save_player(player)
 
+    save_player(player)
     if player["movement_points"] <= 0:
         update_display(["You're out of movement points! Game over."])
     if player["health"] <= 0:
