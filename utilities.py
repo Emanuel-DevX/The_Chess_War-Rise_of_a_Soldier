@@ -60,7 +60,6 @@ def move(row, col, direction):
     """
     Move the character on the board according to the desired direction, if valid.
 
-    :param board_size: An integer representing the size of the square board (board is board_size x board_size).
     :param row: An integer representing the character's current row position.
     :param col: An integer representing the character's current column position.
     :param direction: A string representing the proposed movement direction, which can be:
@@ -92,17 +91,17 @@ def move(row, col, direction):
     elif direction == 'west':
         col -= 1
     elif direction == 'north_east':
-         row -= 1
-         col += 1
+        row -= 1
+        col += 1
     elif direction == 'north_west':
-         row -= 1
-         col -= 1
+        row -= 1
+        col -= 1
     elif direction == 'south_east':
-         row += 1
-         col += 1
+        row += 1
+        col += 1
     elif direction == 'south_west':
-         row += 1
-         col -= 1
+        row += 1
+        col -= 1
     return row, col
 
 
@@ -144,26 +143,30 @@ def promote_player(player):
 
     :param player: A dictionary representing the player's attributes.
     :postcondition: Update the player's piece, skills, and completed challenges.
+
+    >>> test_player = {'piece': 'pawn', 'position': [1,1], 'gold': 0, 'knowledge': [], 'completed_challenges': []}
+    >>> expected = {'piece': 'bishop', 'position': [0,0], 'gold': 20, 'knowledge': ['Master of Diagonal Warfare'],\
+        'completed_challenges': ['Level 1 Completed']}
+    >>> promote_player(test_player)
+    >>> test_player == expected
+    True
     """
     if player["piece"] == "pawn":
         player["piece"] = "bishop"
-        player["position"] = [0,0]
+        player["position"] = [0, 0]
         player["gold"] += 20
         player["knowledge"].append("Master of Diagonal Warfare")
         player["completed_challenges"].append("Level 1 Completed")
-        print("🔱 Your pawn has been promoted to a Bishop!")
     elif player["piece"] == "bishop":
         player["piece"] = "rook"
         player["gold"] += 30
         player["knowledge"].append("Master of Straight-Line Power")
         player["completed_challenges"].append("Level 2 Completed")
-        print("🏰 Your Bishop has been promoted to a Rook!")
     elif player["piece"] == "rook":
         player["piece"] = "overlord"
         player["gold"] += 50
         player["knowledge"].append("Overlord - Imposes dominance without being a King.")
         player["completed_challenges"].append("Level 3 Completed")
-        print("👑 The Rook, now Overlord, enforces its rule from the Obsidian Tower!")
 
 
 def print_level_completion_message(level):
@@ -173,14 +176,14 @@ def print_level_completion_message(level):
     :param level: The level that was completed.
     """
     messages = {
-        1: "🎉 Congratulations! You have completed Level 1! Your journey as a Bishop begins.",
-        2: "🎉 Well done! Level 2 completed! The power of the Rook is now yours.",
-        3: "👑 Magnificent! You have reached the pinnacle as an Overlord! Rule wisely."
+        1: ("🎉 Congratulations! You have completed Level 1! Your journey as a Bishop begins."
+            "🔱 Your pawn has been promoted to a Bishop!" ),
+        2: ("🎉 Well done! Level 2 completed! The power of the Rook is now yours." 
+            "🏰 Your Bishop has been promoted to a Rook!"),
+        3: ("👑 Magnificent! You have reached the pinnacle as an Overlord! Rule wisely."
+            "👑 The Rook, now Overlord, enforces its rule from the Obsidian Tower!")
     }
     print(messages.get(level, "🎉 Congratulations on your achievement!"))
-
-
-
 
 
 def set_traps(game_map, board_start, num_traps=5):
@@ -232,13 +235,11 @@ def check_for_trap(position, traps, player):
     return False
 
 
-
-def encounter_event(player, game_map):
+def encounter_event(player):
     """
     Random encounter event while moving.
 
     :param player: Player dictionary
-    :param game_map: Current game map
     :return: Event message
     """
     events = [
