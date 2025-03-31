@@ -8,7 +8,7 @@ import json
 def initialize_player():
     """Create a new player with default values."""
     player = {
-        "health": 100,
+        "health": 30,
         "gold":25,
         "boldness": 0,
         "movement_points": 50,
@@ -71,6 +71,11 @@ def player_status():
     clues = player.get("clues", [])
     total_clues = len(clues) + clues_found
     max_moves = player.get("max_moves", 50)
+    goals ={
+        "pawn": "Reach the 8th rank without being captured.",
+        "bishop": "Find the spy while avoiding traps!",
+        "rook": "Spy in enemy territory to uncover the king's location."
+    }
 
     status_message = [
         f"Health: {player_hl}",
@@ -78,7 +83,7 @@ def player_status():
         f"Clues found: {clues_found}/{total_clues}",
         f"Movement points: {player['movement_points']}",
         f"Moves taken: {player['moves_taken']}/{max_moves}",
-        "Your goal: Find the spy while avoiding traps!"
+        f"Your goal: {goals[player['piece']]}"
     ]
 
     return status_message
