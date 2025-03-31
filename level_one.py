@@ -128,13 +128,13 @@ def place_pawn(player):
     while True:
         column = random.randint(4, 11)  # Random file (column)
         location = (25, column)  # Row 25 (2nd rank)
-        file_letter = column_to_file(column-4)
+        file_letter = column_to_file(column - 4)
         zone, skill_boost, health_change = assign_position_attributes(column)
 
         options_menu = [
-        f"Your pawn is placed at Rank 2, File {file_letter} ({zone} area).",
-        f"- 🛠️ Skill Boost: {skill_boost}",
-        f"- ❤️ Health Change: {health_change}",
+            f"Your pawn is placed at Rank 2, File {file_letter} ({zone} area).",
+            f"- 🛠️ Skill Boost: {skill_boost}",
+            f"- ❤️ Health Change: {health_change}",
             "Choose an option:",
             "1️ Keep this position",
             "2️ Re-roll for a new position"
@@ -162,7 +162,7 @@ def confirm_move(player, direction):
     :postcondition: Either allows or prevents movement based on conditions.
     :return: A boolean indicating whether the move is allowed.
     """
-    display_text =[]
+    display_text = []
     if direction == "north":
         event = random.randint(1, 5)
         if event == 1:
@@ -203,14 +203,13 @@ def confirm_move(player, direction):
         player_manager.save_player(player)
 
 
-
 def run_level(player):
     level_one_intro()
     level_one_training()
     game_map = setup_game_environment()
     place_pawn(player)
     update_player_on_map(game_map, player["position"], None)
-    board_start = (19,4)
+    board_start = (19, 4)
 
     while player["movement_points"] >= 0:
 
@@ -224,12 +223,17 @@ def run_level(player):
         row = player["position"][0]
         col = player["position"][1]
 
-        new_position = move(board_start, row, col, desired_move)
+        if not validate_move(board_start, row, col, desired_move):
+            update_display(["Invalid move! Try again."], save_text=True)
+            continue
+
+        new_position = move(row, col, desired_move)
+
         if confirm_move(player, desired_move):
             update_player_on_map(game_map, new_position, player["position"])
             player["position"] = new_position
             player["moves_taken"] += 1
-            player["movement_points"]-= 1
+            player["movement_points"] -= 1
             player_manager.save_player(player)
     update_display(["Yay!"])
     print_level_completion_message(1)
