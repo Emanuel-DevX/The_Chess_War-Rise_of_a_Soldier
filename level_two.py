@@ -1,4 +1,8 @@
+import random
 from utilities import *
+from display_manager import update_display
+from map import update_player_on_map, setup_game_environment
+from player_manager import save_player
 
 
 def level_two_intro():
@@ -35,7 +39,7 @@ def level_two_intro():
 
     ➡️ Press ENTER to begin your trial...
     """
-    update_display([line.strip() for line in intro_text.splitlines()])
+    update_display([line.strip() for line in intro_text.splitlines()], status=False)
     input()
 
 
@@ -72,7 +76,7 @@ def level_two_training():
 
     ➡️ Press ENTER to start training...
     """
-    update_display(training_text.splitlines())
+    update_display(training_text.splitlines(), status=False)
     input()
 
 
@@ -106,9 +110,8 @@ def spy_mission():
 
     ➡️ Press ENTER to begin your search for the spy...
     """
-    update_display(mission_text.splitlines())
+    update_display(mission_text.splitlines(), status=False)
     input()
-
 
 
 def place_bishop(player, board_start):
@@ -142,11 +145,9 @@ def place_bishop(player, board_start):
 
         player["position"] = position
         player["health"] += 10  # Bishop gets health boost
-        player_manager.save_player(player)
-
-        update_display([])
-        print("✅ Bishop placed on " + ("light" if choice == 'L' else "dark") + " square!")
-        time.sleep(2)
+        save_player(player)
+        set_pos = ["Bishop placed on " + ("light" if choice == 'L' else "dark") + " square!"]
+        update_display(set_pos, save_text=True)
         break
 
 
@@ -227,10 +228,10 @@ def discover_clue(player, clues):
         return None
 
     clue, is_genuine = clues.pop(0)
-    player["clues"] = player.get("clues", []) + [clue]
+    player["found_clues"] = player.get("clues", []) + [clue]
 
     clue_message = [
-        "📜 You discovered a clue!",
+        "You discovered a clue!",
         clue
     ]
 
@@ -270,8 +271,9 @@ def accuse_spy(suspects, true_spy, player):
                     update_display([
                         f"You wrongly accused {accused}!",
                         f"The true spy was {true_spy}.",
-                        "Your reputation has suffered."
-                    ])
+                        "Your reputation has suffered.",
+
+                    ], save_text=True)
                     player["reputation"] = player.get("reputation", 0) - 10
                     return False
             else:
@@ -280,8 +282,7 @@ def accuse_spy(suspects, true_spy, player):
             print("Please enter a valid number.")
 
 
-
-def run_level(player):
+def initialize_level(player):
     level_two_intro()
     level_two_training()
     spy_mission()
@@ -291,64 +292,85 @@ def run_level(player):
     update_player_on_map(game_map, player["position"])
     clues, true_spy = generate_clues()
     traps = set_traps(game_map, board_start)
-    moves_taken = 0
-    clues_found = 0
-    max_moves = 20
-    if "movement_points" not in player:
-        player["movement_points"] = 10
 
-    while moves_taken < max_moves and player["health"] > 0:
-        status_message = [
-            f"Moves taken: {moves_taken}/{max_moves}",
-            f"Health: {player['health']}",
-            f"Clues found: {clues_found}/{len(clues)}",
-            f"Movement points: {player['movement_points']}",
-            "Your goal: Find the spy while avoiding traps!"
-        ]
-        update_display(status_message)
+    player.update({
+        "clues_found": 0,
+        "movement_points": 10,
+        "clues": clues
+    })
+    save_player(player)
+
+    return game_map, board_start, clues, true_spy, traps
+
+
+
+def handle_random_events(player, clues, game_map):
+    if random.random() < 0.3 and clues:  # 30% chance to find clue
+        clue_message = discover_clue(player, clues)
+        if clue_message:
+            player["clues_found"] += 1
+            update_display(clue_message, save_text=True)
+            return
+
+    if random.random() < 0.2:  # 20% chance for random encounter
+        event_message = encounter_event(player, game_map)
+        update_display(["Event: " + event_message], save_text=True)
+
+
+def handle_accusation(player, true_spy):
+    update_display(["You have enough information to make an accusation."], save_text=True)
+    accusation_choice = input("Do you want to accuse someone now? (y/n): ").lower()
+
+    if accusation_choice == 'y':
+        suspects = ["The Knight", "The Rook", "The Queen", "The Pawn"]
+        success = accuse_spy(suspects, true_spy, player)
+        if success:
+            print_level_completion_message(2)
+            return True
+
+    return False
+
+
+def run_level(player):
+    game_map, board_start, clues, true_spy, traps = initialize_level(player)
+    max_moves, moves_taken = 20, 0
+    player.update({"max_moves": max_moves, "moves_taken": moves_taken})
+    save_player(player)
+
+    while (player["moves_taken"] < max_moves and
+           player["health"] > 0 and
+           player["movement_points"] > 0):
 
         desired_move = get_bishop_move_choice()
         if not desired_move:
             update_display(["Invalid move for a bishop! Try again."])
             continue
+
+
         current_pos = player["position"]
         new_position = move(board_start, current_pos[0], current_pos[1], desired_move)
+        player["movement_points"] -= 1  # Deduct after check but before actual move
         if player["movement_points"] <= 0:
-            update_display(["You're out of movement points! Game over."])
             break
-        player["movement_points"] -= 1
         update_player_on_map(game_map, new_position, current_pos)
         player["position"] = new_position
-
         if check_for_trap(new_position, traps, player):
-            if player["health"] <= 0:
-                update_display(["You died from trap injuries! Game over."])
-                break
-        if random.random() < 0.3 and clues:  # 30% chance to find clue
-            clue_message = discover_clue(player, clues)
-            if clue_message:
-                update_display(clue_message)
-                clues_found += 1
-                time.sleep(2)
-        if random.random() < 0.2:  # 20% chance for random encounter
-            event_message = encounter_event(player, game_map)
-            update_display(["Event: " + event_message])
-            time.sleep(2)
+            player["moves_taken"] += 1
+            save_player(player)
+            continue
 
-        # Save player state
-        player_manager.save_player(player)
-        moves_taken += 1
-        # Option to accuse after finding at least 3 clues
-        if clues_found >= 3 and random.random() < 0.3:
-            update_display(["You have enough information to make an accusation."])
-            accusation_choice = input("Do you want to accuse someone now? (y/n): ").lower()
-            if accusation_choice == 'y':
-                suspects = ["The Knight", "The Rook", "The Queen", "The Pawn"]
-                success = accuse_spy(suspects, true_spy, player)
-                if success:
-                    print_level_completion_message(2)
-                    return
-                else:
-                    # Continue but with a penalty
-                    max_moves -= 3
+        handle_random_events(player, clues, game_map)
+        player["moves_taken"] += 1
+        save_player(player)
 
+        if player["clues_found"] >= 3 and random.random() < 0.3:
+            if handle_accusation(player, true_spy):
+                return  # Level completed successfully
+            max_moves -= 3  # Penalty for wrong accusation_moves -= 3
+            player["max_moves"] = max_moves
+            save_player(player)
+
+    if player["movement_points"] <= 0:
+        update_display(["You're out of movement points! Game over."])
+    if player["health"] <= 0:
+        update_display(["You've died! Game over."])
