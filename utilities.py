@@ -1,87 +1,46 @@
 import random
-import time
 from display_manager import update_display
-
-
-
-def print_map(rows, column, player_loc):
-    """
-    Display a visual representation of the game map with walls and the player's position.
-
-    :param rows: An integer representing the number of rows in the game map.
-    :param column: An integer representing the number of columns in the game map.
-    :param player_loc: A tuple (x, y) representing the player's current location.
-    :precondition: rows must be a non-negative integer.
-    :precondition: column must be a non-negative integer.
-    :precondition: player_loc must be a tuple of two integers, where both are within the range of (0, rows-1) and
-                   (0, column-1) respectively.
-    :postcondition: Display a visual representation of the game map with walls around the edge and the player's
-                    position marked with a blue circle.
-
-    >>> # print_map(2, 2, (1, 1)) will print the following map.
-    >>> # 🏛️ 🏛️ 🏛️ 🏛️
-    >>> # 🏛️       🏛️
-    >>> # 🏛️    🔵 🏛️
-    >>> # 🏛 🏛️ 🏛️ 🏛️
-    """
-    rows += 1
-    column += 1
-    my_map = "\n"
-
-    for row in range(-1, rows):
-        for col in range(-1, column):
-            if row == -1 or col == -1 or row == rows - 1 or col == rows - 1:
-                my_map += "⛩ "
-            else:
-                if player_loc == (row, col):
-                    my_map += "🔵 "
-                else:
-                    my_map += "   "
-        my_map += "\n"
-    print(my_map)
 
 
 def validate_move(board_start, row, col, direction):
     """
-    Validate if the character's proposed move stays within the boundaries of the board.
+    Validate if the character's proposed move stays within the boundaries of the current board segment.
 
-    :param board_size: An integer representing the size of the square board (board is board_size x board_size).
-    :param row: An integer representing the character's current row position.
-    :param col: An integer representing the character's current column position.
+    :param board_start: A tuple (start_row, start_col) representing the top-left corner of the current 8x8 board segment.
+    :param row: An integer representing the character's current row position within the segment.
+    :param col: An integer representing the character's current column position within the segment.
     :param direction: A string representing the proposed movement direction, which can be:
                       'north', 'south', 'east', 'west', 'north_east', 'north_west',
                       'south_east', or 'south_west'.
-    :precondition: board_size must be a positive integer.
-    :precondition: row and col must be integers between 0 and board_size - 1 (inclusive).
-    :precondition: direction must be one of the allowed direction strings ('north', 'south',
-                   'east', 'west', 'north_east', 'north_west', 'south_east', 'south_west').
-    :postcondition: Validate if the proposed move stays within the board boundaries.
-    :return: True if the proposed move stays within the board boundaries, False otherwise.
+    :precondition: board_start must be a tuple of two non-negative integers.
+    :precondition: row and col must be integers between 0 and 7 (inclusive).
+    :precondition: direction must be one of the allowed direction strings.
+    :return: True if the proposed move stays within the current 8x8 segment, False otherwise.
 
-    >>> validate_move(8, 7, 3, 'north')
+    >>> validate_move((0, 0), 7, 3, 'north')  # From bottom edge moving north
     True
-    >>> validate_move(8, 7, 3, 'south')
+    >>> validate_move((0, 0), 7, 3, 'south')  # From bottom edge moving south (would exit segment)
     False
-    >>> validate_move(8, 0, 0, 'north')
+    >>> validate_move((0, 0), 0, 0, 'north')  # From top-left corner moving north
     False
-    >>> validate_move(8, 0, 0, 'west')
+    >>> validate_move((0, 0), 0, 0, 'west')    # From top-left corner moving west
     False
-    >>> validate_move(8, 4, 4, 'north_east')
+    >>> validate_move((0, 0), 4, 4, 'north_east')  # Valid diagonal move
     True
-    >>> validate_move(8, 0, 7, 'north_west')
+    >>> validate_move((0, 0), 0, 7, 'north_west')  # From top-right corner moving NW
     False
-    >>> validate_move(8, 6, 6, 'south_east')
+    >>> validate_move((0, 0), 6, 6, 'south_east')   # Valid SE move
     True
-    >>> validate_move(8, 1, 1, 'south_west')
+    >>> validate_move((0, 0), 1, 1, 'south_west')   # Valid SW move
     True
     """
     board_start_row = board_start[0]
     board_start_col = board_start[1]
     if direction == 'north' and row > board_start_row:
         return True
-    elif direction == 'south' and row < board_start_row + 8:
+    elif direction == 'south' and row < board_start_row + 7:
         return True
-    elif direction == 'east' and col < board_start_col + 8:
+    elif direction == 'east' and col < board_start_col + 7:
         return True
     elif direction == 'west' and col > board_start_row:
         return True
@@ -94,7 +53,6 @@ def validate_move(board_start, row, col, direction):
     elif direction == 'south_west' and row < board_start_row + 7 and col > board_start_col:
         return True
 
-    update_display(["Invalid move for a bishop! Try again."], save_text=True)
     return False
 
 
@@ -222,13 +180,6 @@ def print_level_completion_message(level):
     }
     print(messages.get(level, "🎉 Congratulations on your achievement!"))
 
-# def print_game_map(game_map):
-#     """Print the game map with row numbers"""
-#
-#     for row_number, row in enumerate(game_map):
-#         print(f"{row_number:>100}", end="")
-#         print("".join(row))
-
 
 
 
@@ -306,19 +257,3 @@ def encounter_event(player, game_map):
 
     return event
 
-
-def loading_screen():
-    load_msg = """
-
-    ██╗      ██████╗  █████╗ ██████╗ ██╗███╗   ██╗ ██████╗       
-    ██║     ██╔═══██╗██╔══██╗██╔══██╗██║████╗  ██║██╔════╝       
-    ██║     ██║   ██║███████║██║  ██║██║██╔██╗ ██║██║  ███╗      
-    ██║     ██║   ██║██╔══██║██║  ██║██║██║╚██╗██║██║   ██║      
-    ███████╗╚██████╔╝██║  ██║██████╔╝██║██║ ╚████║╚██████╔╝██╗██╗
-    ╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚═════╝ ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝╚═╝
-
-    """
-    print(load_msg)
-    for _ in range(90):
-        print("██", end="")
-        time.sleep(0.1)
