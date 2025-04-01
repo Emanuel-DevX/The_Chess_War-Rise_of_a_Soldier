@@ -1,5 +1,5 @@
 def create_chess_board():
-    """Create an 8x8 chess board pattern"""
+    """Create a 8x8 chess board pattern"""
     return [["⬜ " if (row + col) % 2 else "⬛ " for col in range(8)] for row in range(8)]
 
 
@@ -99,6 +99,7 @@ def place_chess_board(game_map, start_row=2, start_col=2):
             game_map[start_row + row_offset][start_col + col_offset] = chess_board[row_offset][col_offset]
     add_chess_board_labels(game_map, start_row, start_col)
 
+
 def print_game_map(game_map):
     """Print the game map with row numbers"""
     for row_number, row in enumerate(game_map):
@@ -109,11 +110,10 @@ def print_game_map(game_map):
 def update_player_on_map(game_map, new_position, old_position=None):
     game_map[new_position[0]][new_position[1]] = "🔵 "
     if old_position:
-        game_map[old_position[0]][old_position[1]] = "   "
+        game_map[old_position[0]][old_position[1]] = ("  ")
 
 
 def setup_game_environment():
-
     game_map = initialize_game_map()
 
     place_tiles_on_map(game_map, create_forest_tiles(), "🌲 ")
@@ -122,12 +122,9 @@ def setup_game_environment():
     place_tiles_on_map(game_map, create_level_interiors(), "   ")
     place_tiles_on_map(game_map, create_level_walls(), "🏛️ ")
 
-
     place_chess_board(game_map)
 
     return game_map
 
 
-if __name__ == "__main__":
-    game_map = setup_game_environment()
-    print_game_map(game_map)
+
