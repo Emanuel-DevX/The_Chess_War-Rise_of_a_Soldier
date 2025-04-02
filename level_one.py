@@ -78,8 +78,10 @@ def level_one_training():
 
 def get_pawn_direction_choice():
     """
-    Ask the user to choose a valid direction for the pawn from a numbered list.
+    Prompt the user to choose a valid direction for the pawn from a numbered menu.
 
+    :postcondition: Display direction options using update_display().
+    :postcondition: Return None if invalid input provided.
     :return: A string representing the chosen direction.
     """
     direction_menu = [
@@ -106,8 +108,21 @@ def assign_position_attributes(column):
     """
     Assign attributes based on the column (file) position.
 
-    :param column: The column (file) index (0-7).
+    :param column: The column (file) index (0-7) inclusive with a shift of (+4) to accurately represent on map.
     :return: A tuple containing skill boost and health adjustment.
+
+    >>> assign_position_attributes(4)
+    ('Safe Zone', 5, 10)
+    >>> assign_position_attributes(5)
+    ('Moderate Risk', 10, 5)
+    >>> assign_position_attributes(6)
+    ('Risky', 15, 0)
+    >>> assign_position_attributes(7)
+    ('High Risk', 20, -5)
+    >>> assign_position_attributes(11)
+    ('Safe Zone', 5, 10)
+    >>> assign_position_attributes(9)
+    ('Risky', 15, 0)
     """
     if column in [4, 11]:
         return "Safe Zone", 5, 10  # Slight skill boost, health +10
