@@ -1,3 +1,8 @@
+from colorama import Fore, Back, Style, init
+
+init(autoreset=True)
+
+
 def create_chess_board():
     """
     Generate a 8x8 chess board pattern with alternating squares.
@@ -116,18 +121,61 @@ def generate_level_walls(center_row, center_col, size=8):
 
 
 def initialize_game_map(size=30, default_tile="🌑 "):
-    """Create a blank game map with specified dimensions"""
+    """
+    Create a blank game map with specified dimensions.
+
+    :param size: The size of the square game map (default is 30x30).
+    :param default_tile: The default tile representation for the map.
+    :return: A 2D list representing the game map.
+
+    >>> game_map = initialize_game_map(5, '#')
+    >>> len(game_map)  # 5 rows
+    5
+    >>> len(game_map[0])  # 5 columns
+    5
+    >>> game_map[0][0] == "#"  # Check default tile
+    True
+    """
     return [[default_tile for _ in range(size)] for _ in range(size)]
 
 
 def place_tiles_on_map(game_map, tiles, tile_type):
-    """Place tiles of specified type on the game map"""
+    """Place tiles of specified type on the game map.
+
+    :param game_map: The game map represented as a 2D list.
+    :param tiles: A list of (row, col) tuples where the tile should be placed.
+    :param tile_type: The tile representation to place on the map.
+    :postcondition: Modifies game_map in place by updating specified positions with tile_type.
+
+    >>> test_map = initialize_game_map(5, "⬜")
+    >>> place_tiles_on_map(test_map, [(1, 1), (2, 2)], "🔥")
+    >>> test_map[1][1] == "🔥"
+    True
+    >>> test_map[2][2] == "🔥"
+    True
+    >>> test_map[0][0] == "⬜"  # Unchanged tile
+    True
+    """
     for row, col in tiles:
         game_map[row][col] = tile_type
 
 
 def add_chess_board_labels(game_map, start_row, start_col):
-    """Add chess notation labels to the chess board"""
+    """
+    Add chess notation labels to the chess board.
+
+    :param game_map: The game map represented as a 2D list.
+    :param start_row: The starting row for the chess board labels.
+    :param start_col: The starting column for the chess board labels.
+    :postcondition: Update game_map in place with chess rank and file labels.
+
+    >>> test_map = initialize_game_map(10, "⬜")
+    >>> add_chess_board_labels(test_map, 1, 1)
+    >>> test_map[1][0] == " 8 "  # Rank 8 label
+    True
+    >>> test_map[9][1] == " A "  # File A label
+    True
+    """
     for rank in range(8):
         game_map[start_row + rank][start_col - 1] = f" {8 - rank} "
 
@@ -137,7 +185,11 @@ def add_chess_board_labels(game_map, start_row, start_col):
 
 
 def create_forest_tiles():
-    """Create forest tiles with excluded positions"""
+    """
+    Create forest tiles with excluded positions.
+
+    :return: List of (row, col) tuples representing forest tiles.
+    """
     excluded_forest_positions = {
         (4, 25), (3, 25), (4, 26),
         (4, 27), (3, 26), (2, 25), (20, 0), (29, 24)
@@ -170,7 +222,14 @@ def create_level_walls():
 
 
 def place_chess_board(game_map, start_row=2, start_col=2):
-    """Place chess board on the game map"""
+    """
+    Place chess board on the game map.
+
+    :param game_map: The game map represented as a 2D list.
+    :param start_row: The starting row for the chess board (default is 2).
+    :param start_col: The starting column for the chess board (default is 2).
+    :postcondition: Modifies game_map in place by inserting a 8x8 chess board.
+    """
     chess_board = create_chess_board()
     for row_offset in range(8):
         for col_offset in range(8):
@@ -185,8 +244,29 @@ def print_game_map(game_map):
         print("".join(row))
 
 
+# Function to determine which piece to use based on position
+def get_piece_for_position(row, col):
+    """Determine the chess piece based on position."""
+
+    chess_pieces = {
+        'pawn': Fore.BLUE + "♟" + Style.RESET_ALL,
+        'rook': Fore.RED + "♜" + Style.RESET_ALL,
+        'bishop': Fore.BLUE + "♝" + Style.RESET_ALL,
+        'default': Fore.BLUE + "🔵" + Style.RESET_ALL  # Default fallback is the blue dot
+    }
+    if (19 <= row <= 26) and (4 <= col <= 11):  # Pawn range
+        return chess_pieces['pawn']
+    elif (17 <= row <= 24) and (19 <= col <= 26):  # Bishop range
+        return chess_pieces['bishop']
+    elif (5 <= row <= 12) and (15 <= col <= 22):  # Rook range
+        return chess_pieces['rook']
+    else:
+        return chess_pieces['default']
+
+
 def update_player_on_map(game_map, new_position, old_position=None):
-    game_map[new_position[0]][new_position[1]] = "🔵 "
+    piece = get_piece_for_position(new_position[0], new_position[1])
+    game_map[new_position[0]][new_position[1]] = piece + " "
     if old_position:
         game_map[old_position[0]][old_position[1]] = "  "
 
