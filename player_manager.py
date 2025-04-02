@@ -6,14 +6,20 @@ import json
 
 
 def initialize_player():
-    """Create a new player with default values."""
+    """
+    Create and save a new player dictionary with default starting values.
+
+    :postcondition: Creates dictionary with all required player attributes.
+    :postcondition: Saves player data using save_player().
+    :return: Dictionary containing initialized player data.
+    """
     player = {
         "health": 30,
-        "gold":25,
+        "gold": 25,
         "boldness": 0,
         "movement_points": 50,
         "moves_taken": 0,
-        "clues_found":0,
+        "clues_found": 0,
 
         "piece": "pawn",
         "position": [0, 0],
@@ -27,12 +33,25 @@ def initialize_player():
 
 # noinspection PyTypeChecker
 def save_player(player_dict):
+    """
+    Save player data to a JSON file.
+
+    :param player_dict: Dictionary containing player data to save.
+    :precondition: player_dict must be JSON-serializable.
+    :postcondition: Data saved to 'player.json' with 4-space indentation.
+    """
     with open('player.json', 'w') as file:
         json.dump(player_dict, file, indent=4)
 
 
 def load_player():
-    """Load player data from JSON file."""
+    """
+    Load player data from JSON file or initialize new player if file doesn't exist.
+
+    :postcondition: Attempt to load player.json file.
+    :postcondition: Initialize new player if file missing or invalid.
+    :return: Dictionary containing player data.
+    """
     try:
         with open('player.json', 'r') as file:
             return json.load(file)
@@ -40,22 +59,54 @@ def load_player():
         print("Creating new player data...")
         return initialize_player()
 
+
 def update_player_attribute(key, value):
-    """Update a specific player attribute."""
+    """
+    Update specified player attribute and save changes.
+
+    :param key: String representing attribute name to update.
+    :param value: New value to assign to the attribute.
+    :precondition: Key must exist in player dictionary.
+    :precondition: Value must be valid for specified attribute.
+    :postcondition: Load current player data.
+    :postcondition: Modify specified attribute.
+    :postcondition: Save updated player data.
+    :return: Updated player dictionary.
+    """
     player = load_player()
     player[key] = value
     save_player(player)
     return player
 
+
 def add_to_inventory(item):
-    """Add an item to player's inventory."""
+    """
+    Add specified item to player's inventory and save changes.
+
+    :param item: Object to add to inventory (typically string or dict).
+    :precondition: Player data must be loadable.
+    :precondition: Player dictionary must have 'inventory' key.
+    :postcondition: Item appended to inventory list.
+    :postcondition: Updated player data saved.
+    :return: Updated player dictionary.
+    """
     player = load_player()
     player["inventory"].append(item)
     save_player(player)
     return player
 
+
 def add_knowledge(info):
-    """Add information to player's knowledge."""
+    """
+    Add new information to player's knowledge base.
+
+    :param info: String containing knowledge to add.
+    :precondition: Player data must be loadable.
+    :precondition: Player dictionary must have 'knowledge' key.
+    :postcondition: Info appended to knowledge list.
+    :postcondition: Updated player data saved.
+    :return: Updated player dictionary.
+    """
     player = load_player()
     player["knowledge"].append(info)
     save_player(player)
@@ -63,6 +114,14 @@ def add_knowledge(info):
 
 
 def player_status():
+    """
+    Generate current player status summary for display.
+
+    :postcondition: Loads current player data.
+    :postcondition: Compiles key status information.
+    :postcondition: Returns formatted status lines.
+    :return: List of strings containing player status information.
+    """
     player = load_player()  # Assuming this function loads player data
 
     player_hl = player["health"]
@@ -71,7 +130,7 @@ def player_status():
     clues = player.get("clues", [])
     total_clues = len(clues) + clues_found
     max_moves = player.get("max_moves", 50)
-    goals ={
+    goals = {
         "pawn": "Reach the 8th rank without being captured.",
         "bishop": "Find the spy while avoiding traps!",
         "rook": "Spy in enemy territory to uncover the king's location."
