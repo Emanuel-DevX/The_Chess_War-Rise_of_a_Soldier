@@ -19,7 +19,22 @@ def create_chess_board():
 
 
 def generate_forest_tiles(excluded_positions):
-    """Generate forest tiles while excluding specified positions"""
+    """
+    Generate list of forest tile coordinates excluding specified positions.
+
+    :param excluded_positions: List of (row, col) tuples to exclude.
+    :postcondition: Creates vertical strip (rows 20-29, cols 0-24).
+    :postcondition: Creates adjacent rectangle (rows 0-4, cols 25-29).
+    :postcondition: Filters out excluded positions.
+    :return: List of (row, col) tuples representing forest tiles.
+
+    >>> generate_forest_tiles([])[:3]  # First few tiles
+    [(20, 0), (20, 1), (20, 2)]
+    >>> len(generate_forest_tiles([]))  # Total tiles without exclusions
+    275
+    >>> len(generate_forest_tiles([(20, 0), (21, 1)])) #275 - 2   2 positions excluded
+    273
+    """
     vertical_strip = [(row, col) for row in range(20, 30) for col in range(25)]
     adjacent_rectangle = [(row, col) for row in range(0, 5) for col in range(25, 30)]
     all_forest_tiles = vertical_strip + adjacent_rectangle
@@ -27,13 +42,44 @@ def generate_forest_tiles(excluded_positions):
 
 
 def generate_fire_tiles(excluded_fire_tiles):
-    """Generate fire tiles while excluding specified positions"""
+    """
+    Generate coordinates for fire hazard tiles excluding specified positions.
+
+    :param excluded_fire_tiles: List of (row, col) tuples to exclude from fire zone.
+    :postcondition: Create rectangular fire zone (rows 23-29, columns 15-20).
+    :postcondition: Filter out all excluded positions.
+    :return: List of (row, col) tuples representing active fire tiles.
+
+    >>> fire_tiles = generate_fire_tiles([])
+    >>> len(fire_tiles)  # 7 rows x 6 columns
+    42
+    >>> (23, 15) in fire_tiles  # Top-left corner
+    True
+    >>> (29, 20) in fire_tiles  # Bottom-right corner
+    True
+    """
     fire_area = [(row, col) for row in range(23, 30) for col in range(15, 21)]
     return [tile for tile in fire_area if tile not in excluded_fire_tiles]
 
 
 def generate_level_interior(center_row, center_col, size=8):
-    """Generate the interior area of a level"""
+    """
+    Generate the interior area of a level
+
+    :param center_row: An integer representing the starting row of the level interior.
+    :param center_col: An integer representing the starting column of the level interior.
+    :param size: The size of the square level interior (default is 8).
+    :return: List of (row, col) tuples representing the level interior.
+
+
+    >>> interior = generate_level_interior(10, 10)
+    >>> len(interior)  # 8 rows x 8 columns
+    64
+    >>> (10, 10) in interior  # Top-left corner
+    True
+    >>> (17, 17) in interior  # Bottom-right corner
+    True
+    """
     return [
         (row, col)
         for row in range(center_row, center_row + size)
@@ -42,7 +88,24 @@ def generate_level_interior(center_row, center_col, size=8):
 
 
 def generate_level_walls(center_row, center_col, size=8):
-    """Generate walls surrounding a level"""
+    """
+    Generate walls surrounding a level.
+
+    :param center_row: An integer representing the starting row of the level interior.
+    :param center_col: An integer representing the starting column of the level interior.
+    :param size: The size of the square level interior (default is 8).
+    :return: List of (row, col) tuples representing the wall tiles.
+
+    >>> walls = generate_level_walls(10, 10)
+    >>> len(walls)  # 10x10 outer boundary - 8x8 inner space
+    36
+    >>> (9, 9) in walls  # Top-left corner of wall
+    True
+    >>> (18, 18) in walls  # Bottom-right corner of wall
+    True
+    >>> (10, 10) in walls  # Interior tile, should not be in walls
+    False
+    """
     return [
         (row, col)
         for row in range(center_row - 1, center_row + size + 1)
