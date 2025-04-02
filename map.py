@@ -1,5 +1,20 @@
 def create_chess_board():
-    """Create a 8x8 chess board pattern"""
+    """
+    Generate a 8x8 chess board pattern with alternating squares.
+
+    :postcondition: Create a perfect chess board pattern
+    :return: List of lists representing the board (8 rows x 8 columns)
+
+    >>> board = create_chess_board()
+    >>> len(board)
+    8
+    >>> board[0][0]  # Top-left corner
+    '⬛ '
+    >>> board[0][1]
+    '⬜ '
+    >>> board[7][7]  # Bottom-right corner
+    '⬛ '
+    """
     return [["⬜ " if (row + col) % 2 else "⬛ " for col in range(8)] for row in range(8)]
 
 
@@ -110,7 +125,7 @@ def print_game_map(game_map):
 def update_player_on_map(game_map, new_position, old_position=None):
     game_map[new_position[0]][new_position[1]] = "🔵 "
     if old_position:
-        game_map[old_position[0]][old_position[1]] = ("  ")
+        game_map[old_position[0]][old_position[1]] = "  "
 
 
 def setup_game_environment():
