@@ -1,3 +1,12 @@
+"""
+Level One: Pawn's Path
+
+Goal: Move your pawn to the final rank
+- Forward or diagonal moves
+- Start position gives bonuses
+- Limited moves available
+- Reach the end to win
+"""
 from utilities import *
 from map import *
 import player_manager
@@ -139,6 +148,11 @@ def place_pawn(player):
     Randomly place the pawn on the 2nd rank (row 6) and allows the user to choose whether to keep it.
 
     :param player: A dictionary representing the player's attributes.
+    :precondition: Player must be mutable dictionary with 'position', 'health', and 'knowledge' keys
+    :postcondition: Randomly select pawn starting column (4-11).
+    :postcondition: Display position attributes and options menu.
+    :postcondition: Update player stats if position accepted.
+    :postcondition: Save updated player data.
     :postcondition: Update the player's position, health, and knowledge based on the chosen location.
     """
     while True:
@@ -166,7 +180,6 @@ def place_pawn(player):
             break
 
     print("✅ Final position set!")
-    return player
 
 
 def confirm_move(player, direction):
@@ -220,6 +233,17 @@ def confirm_move(player, direction):
 
 
 def run_level(player):
+    """
+    Execute main game loop for level one pawn movement gameplay.
+
+    :param player: Dictionary containing player's current game state.
+    :precondition: Player dictionary must contain 'position', 'movement_points', and 'moves_taken' keys.
+    :postcondition: Initialize level and display intro/training.
+    :postcondition: Place pawn on starting position.
+    :postcondition: Process player moves until promotion or movement points exhausted.
+    :postcondition: Update player position and stats after each move.
+    :postcondition: Display completion message when level finished.
+    """
     level_one_intro()
     level_one_training()
     game_map = setup_game_environment()
