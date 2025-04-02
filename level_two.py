@@ -1,3 +1,18 @@
+"""
+Level Two: Bishop's Spy Hunt
+
+Control a bishop piece to:
+- Move diagonally across the board
+- Find hidden clues
+- Avoid traps
+- Identify the spy before time runs out
+
+Features:
+- 20 turns max
+- Random clue discoveries
+- Traps that reduce health
+- Accusation mechanic at 3+ clues
+"""
 from display_manager import update_display
 from map import update_player_on_map, setup_game_environment
 from player_manager import save_player
@@ -120,6 +135,9 @@ def place_bishop(player, board_start):
 
     :param player: A dictionary representing the player's attributes.
     :param board_start: A tuple representing the top-left corner of the board.
+    :precondition: Ensure player is a mutable dictionary with required keys.
+    :precondition: Ensure board_start is a valid coordinate tuple (row, col).
+    :postcondition: Update player's position, health, bishop_color, and knowledge based on choice
     :postcondition: Update the player's position and attributes.
     """
 
@@ -153,9 +171,12 @@ def place_bishop(player, board_start):
 
 def generate_clues():
     """
-    Generate a list of clues for the spy mission.
+    Generate random clues about the spy's identity, including genuine clues and red herrings.
 
-    :return: List of clues
+    :postcondition: Create a shuffled list of clues where some are genuine and some are red herrings.
+    :postcondition: Guarantee at least one genuine clue about the actual spy.
+    :postcondition: Include additional general clues that may be helpful.
+    :return: A tuple containing (list of (clue, is_genuine) tuples, actual_spy_identity)
     """
     suspects = ["The Knight", "The Rook", "The Queen", "The Pawn"]
     locations = ["North Tower", "Eastern Gardens", "Royal Chambers", "Training Grounds"]
@@ -190,9 +211,12 @@ def generate_clues():
 
 def get_bishop_move_choice():
     """
-    Ask the user to choose a valid direction for the bishop from a numbered list.
+    Prompt the user to select a bishop movement direction from a numbered menu.
 
-    :return: A string representing the chosen direction.
+    :postcondition: Display the direction menu using update_display()
+    :postcondition: Return None if invalid input is provided
+    :return: A string representing the chosen direction ('north_east', 'north_west',
+             'south_east', 'south_west') or None if invalid choice.
     """
     direction_menu = [
         "Choose a direction for the bishop:",
@@ -218,11 +242,16 @@ def get_bishop_move_choice():
 
 def discover_clue(player, clues):
     """
-    Discover a new clue about the spy.
+    Discover and reveal a clue from the available clues list.
 
-    :param player: Player dictionary
-    :param clues: List of available clues
-    :return: Discovered clue or None if no clues left
+    :param player: A dictionary containing player information including found_clues.
+    :param clues: A list of tuples containing (clue_text, is_genuine) pairs.
+    :precondition: Ensure player is a mutable dictionary.
+    :precondition: Ensure clues is a mutable list of (str, bool) tuples.
+    :postcondition: Remove the first clue from the clues list if available.
+    :postcondition: Add discovered clue to player's found_clues list.
+    :postcondition: Display clue with possible intuition hint for genuine clues.
+    :return: A list of strings representing the clue message or None if no clues left.
     """
     if not clues:
         return None
@@ -244,16 +273,22 @@ def discover_clue(player, clues):
 
 def accuse_spy(suspects, true_spy, player):
     """
-    Allow player to accuse who they think is the spy.
+    Handle player's accusation of who they believe is the spy.
 
-    :param suspects: List of suspects
-    :param true_spy: The actual spy
-    :param player: Player dictionary
-    :return: True if correct accusation, False otherwise
+    :param suspects: A list of strings representing possible suspects.
+    :param true_spy: A string representing the actual spy's identity.
+    :param player: A dictionary containing player's reputation information.
+    :precondition: suspects must be a non-empty list of strings.
+    :precondition: Ensure true_spy exists in suspects list.
+    :precondition: Ensure player is a mutable dictionary.
+    :postcondition: Display accusation menu using update_display().
+    :postcondition: Modify player's reputation based on accusation correctness.
+    :postcondition: Display outcome message using update_display().
+    :return: True if accusation correct, False otherwise.
     """
     accusation_menu = ["Who do you think is the spy?"]
-    for i, suspect in enumerate(suspects, 1):
-        accusation_menu.append(f"{i}. {suspect}")
+    for index, suspect in enumerate(suspects, 1):
+        accusation_menu.append(f"{index}. {suspect}")
 
     update_display(accusation_menu)
 
@@ -283,6 +318,20 @@ def accuse_spy(suspects, true_spy, player):
 
 
 def initialize_level(player):
+    """
+    Initialize all components for level two gameplay.
+
+    :param player: A dictionary containing player information to be updated.
+    :precondition: Ensure player is a mutable dictionary with required keys.
+    :postcondition: Execute level two introduction and training sequences.
+    :postcondition: Start spy mission narrative.
+    :postcondition: Set up game map environment.
+    :postcondition: Place bishop on board and update map display.
+    :postcondition: Generate spy clues and traps.
+    :postcondition: Update player with level-specific attributes.
+    :postcondition: Save updated player state.
+    :return: Tuple containing (game_map, board_start, clues, true_spy, traps)
+    """
     level_two_intro()
     level_two_training()
     spy_mission()
@@ -304,6 +353,17 @@ def initialize_level(player):
 
 
 def handle_random_events(player, clues):
+    """
+    Handle random events that may occur during player's turn.
+
+    :param player: A dictionary containing player information including clues_found
+    :param clues: A list of available clues to discover
+    :precondition: Ensure player is a mutable dictionary with 'clues_found' key
+    :precondition: Ensure clues is a mutable list of clue tuples
+    :postcondition: May discover and display a clue with 30% probability
+    :postcondition: Update player's clues_found count if clue discovered
+    :postcondition: Display clue message if one is found
+    """
     if random.random() < 0.3 and clues:  # 30% chance to find clue
         clue_message = discover_clue(player, clues)
         if clue_message:
@@ -317,6 +377,18 @@ def handle_random_events(player, clues):
 
 
 def handle_accusation(player, true_spy):
+    """
+    Prompt player to make spy accusation if they choose to.
+
+    :param player: A dictionary containing player's reputation information.
+    :param true_spy: A string representing the actual spy's identity.
+    :precondition: Ensure player is a mutable dictionary.
+    :precondition: Ensure true_spy is a valid suspect string.
+    :postcondition: Display accusation prompt to player.
+    :postcondition: If player chooses to accuse, execute accusation process.
+    :postcondition: Modify player's reputation based on accusation outcome.
+    :return: True if player makes correct accusation, False otherwise.
+    """
     update_display(["You have enough information to make an accusation."], save_text=True)
     accusation_choice = input("Do you want to accuse someone now? (y/n): ").lower()
 
@@ -329,6 +401,17 @@ def handle_accusation(player, true_spy):
 
 
 def run_level(player):
+    """
+    Execute main game loop for level two gameplay.
+
+    :param player: A dictionary containing player state information.
+    :precondition: Ensure player dictionary contains required keys (health, position, etc.).
+    :postcondition: Initialize level components and player state.
+    :postcondition: Process player moves until game ending conditions met.
+    :postcondition: Handle traps, random events, and accusation opportunities.
+    :postcondition: Update player state and display throughout gameplay.
+    :postcondition: Save player progress after each move.
+    """
     game_map, board_start, clues, true_spy, traps = initialize_level(player)
     max_moves, moves_taken = 20, 0
     player.update({"max_moves": max_moves, "moves_taken": moves_taken})
