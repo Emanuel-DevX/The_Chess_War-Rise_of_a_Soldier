@@ -113,6 +113,38 @@ def add_knowledge(info):
     return player
 
 
+def promote_player(player):
+    """
+    Promote the player.
+
+    :param player: A dictionary representing the player's attributes.
+    :postcondition: Update the player's piece, skills, and completed challenges.
+
+    >>> test_player = {'piece': 'pawn', 'position': [1,1], 'gold': 0, 'knowledge': [], 'completed_challenges': []}
+    >>> expected = {'piece': 'bishop', 'position': [0,0], 'gold': 20, 'knowledge': ['Master of Diagonal Warfare'],\
+        'completed_challenges': ['Level 1 Completed']}
+    >>> promote_player(test_player)
+    >>> test_player == expected
+    True
+    """
+    if player["piece"] == "pawn":
+        player["piece"] = "bishop"
+        player["position"] = [0, 0]
+        player["gold"] += 20
+        player["knowledge"].append("Master of Diagonal Warfare")
+        player["completed_challenges"].append("Level 1 Completed")
+    elif player["piece"] == "bishop":
+        player["piece"] = "rook"
+        player["gold"] += 30
+        player["knowledge"].append("Master of Straight-Line Power")
+        player["completed_challenges"].append("Level 2 Completed")
+    elif player["piece"] == "rook":
+        player["piece"] = "overlord"
+        player["gold"] += 50
+        player["knowledge"].append("Overlord - Imposes dominance without being a King.")
+        player["completed_challenges"].append("Level 3 Completed")
+
+
 def player_status():
     """
     Generate current player status summary for display.
