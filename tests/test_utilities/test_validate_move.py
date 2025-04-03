@@ -1,6 +1,7 @@
 from unittest import TestCase
 from utilities import validate_move
 
+
 class TestValidateMove(TestCase):
 
     # Cardinal direction tests
