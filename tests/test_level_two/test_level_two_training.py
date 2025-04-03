@@ -2,6 +2,7 @@ from level_two import level_two_training
 from unittest import TestCase
 from unittest.mock import patch
 
+
 class TestLevelTwoTraining(TestCase):
     @patch("builtins.input", return_value="")
     @patch("level_two.update_display")

@@ -2,11 +2,12 @@ from level_two import level_two_intro
 from unittest import TestCase
 from unittest.mock import patch
 
+
 class TestLevelTwoIntro(TestCase):
 
     @patch("builtins.input", return_value="")
     @patch("level_two.update_display")
-    def test_level_two_intro(self, mock_update_display,  mock_input):
+    def test_level_two_intro(self, mock_update_display, mock_input):
         level_two_intro()
 
         # Ensure update_display is called with correctly formatted text
