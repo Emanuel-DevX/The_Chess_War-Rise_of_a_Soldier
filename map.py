@@ -1,8 +1,3 @@
-from colorama import Fore, Back, Style, init
-
-init(autoreset=True)
-
-
 def create_chess_board():
     """
     Generate a 8x8 chess board pattern with alternating squares.
@@ -244,31 +239,10 @@ def print_game_map(game_map):
         print("".join(row))
 
 
-# Function to determine which piece to use based on position
-def get_piece_for_position(row, col):
-    """Determine the chess piece based on position."""
-
-    chess_pieces = {
-        'pawn': Fore.BLUE + "♟" + Style.RESET_ALL,
-        'rook': Fore.RED + "♜" + Style.RESET_ALL,
-        'bishop': Fore.BLUE + "♝" + Style.RESET_ALL,
-        'default': Fore.BLUE + "🔵" + Style.RESET_ALL  # Default fallback is the blue dot
-    }
-    if (19 <= row <= 26) and (4 <= col <= 11):  # Pawn range
-        return chess_pieces['pawn']
-    elif (17 <= row <= 24) and (19 <= col <= 26):  # Bishop range
-        return chess_pieces['bishop']
-    elif (5 <= row <= 12) and (15 <= col <= 22):  # Rook range
-        return chess_pieces['rook']
-    else:
-        return chess_pieces['default']
-
-
 def update_player_on_map(game_map, new_position, old_position=None):
-    piece = get_piece_for_position(new_position[0], new_position[1])
-    game_map[new_position[0]][new_position[1]] = piece + " "
+    game_map[new_position[0]][new_position[1]] = "🔵 "
     if old_position:
-        game_map[old_position[0]][old_position[1]] = "  "
+        game_map[old_position[0]][old_position[1]] = "   "
 
 
 def setup_game_environment():
