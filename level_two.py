@@ -15,7 +15,7 @@ Features:
 """
 from display_manager import update_display
 from map import update_player_on_map, setup_game_environment
-from player_manager import save_player
+from player_manager import save_player, promote_player
 from utilities import *
 import random
 
@@ -344,7 +344,7 @@ def initialize_level(player):
 
     player.update({
         "clues_found": 0,
-        "movement_points": 10,
+        "movement_points": 15,
         "clues": clues
     })
     save_player(player)
