@@ -1,4 +1,3 @@
-
 import random
 from display_manager import update_display
 from player_manager import save_player
@@ -13,7 +12,7 @@ AMHARIC_PHRASES = {
 
 TRAP_TYPES = {
     "Scorpion": "A venomous sting! (-25 health)",
-    "False Guide": "Led into ambush! (-15 health & lose 20 gold)",
+    "Ambush": "Led into ambush! (-15 health & lose 20 gold)",
     "Drum Circle": "Forced to dance until sunrise! (Skip 2 turns)"
 }
 
@@ -90,14 +89,81 @@ def level_three_training():
     # Simulated training
     for _ in range(5):
         test_phrase = random.choice(list(AMHARIC_PHRASES.keys()))
-        convo = [f"Elder says: '{test_phrase}'","Your reply: "]
+        convo = [f"Elder says: '{test_phrase}'", "Your reply: "]
         response = input(f"Elder says: '{test_phrase}'\nYour reply: ").lower()
-        convo[1]+= response
+        convo[1] += response
         if response == AMHARIC_PHRASES[test_phrase]["reply"]:
             convo.append("Correct! You may proceed.")
         else:
             convo.append("Wrong! In real mission, this would be dangerous.")
         update_display(convo, save_text=True, status=True)
+
+
+
+def generate_adal_places():
+    """
+    Generate a randomized 8x8 map segment starting at (5, 15) with 25 unique places.
+    Each place has a unique position and a data dictionary containing:
+      - name
+      - emoji symbol (optional)
+      - description
+      - hidden (True if player needs context to reveal it)
+    """
+
+    # Starting grid size
+    start_row, start_col = 5, 15
+    grid_size = 8
+    max_places = 25
+
+    # Pool of possible places
+    place_pool = [
+        ("oracle", "🧙‍♂️", "A tent filled with scrolls, incense, and riddles.", True),
+        ("scorpion trap", "🦂", "You hear a hiss before you feel the sting.", False),
+        ("drum circle", "🪘", "You're pulled into a night of hypnotic dancing.", False),
+        ("adal market", "🛍️", "Bustling traders shout over each other to sell their wares.", True),
+        ("St. George Shrine", "⛪", "A quiet shrine where truths are sworn.", True),
+        ("hidden message", "📜", "A cryptic note half-buried under rubble.", True),
+        ("shift_locked", "🔒", "A strange symbol etched into stone. It won’t budge.", True),
+        ("enemy_king", "🔴", "A guarded location whispered about in rumors.", True),
+        ("fake_translator", "🔮", "A translator with shifty eyes and forked tongue.", True),
+        ("ambush", "⚔️", "You're surrounded before you can blink.", False),
+        ("wandering villager", None, "A local asks where you're from and watches closely.", False),
+        ("suspicious camp", None, "Tents that look too perfect. Something's off.", True),
+        ("abandoned hut", None, "A crumbling shelter. Might hold clues.", True),
+        ("ravine edge", None, "A steep drop. You hear echoes below.", False),
+        ("goat pen", None, "A noisy pen full of goats. Smells awful.", False),
+        ("guard post", None, "Adal soldiers patrol lazily here.", True),
+        ("ancient stone", None, "A weathered stone with inscriptions.", True),
+        ("storyteller", None, "An old man shares riddles for gold.", False),
+        ("well", None, "You peer into the dark water. Something gleams.", True),
+        ("spice stall", None, "The smell of cumin and cardamom overwhelms you.", False),
+        ("carved idol", None, "A statue worn smooth by time and belief.", True),
+        ("drunken bard", None, "He sings loudly, but his lyrics carry warnings.", False),
+        ("children’s game", None, "They chant a rhyme... is it a clue?", False),
+        ("church", "✝️", "An old St. George church with hiding spots beneath the altar.", True),
+        ("tea house", None, "Quiet murmurs and sidelong glances. Deals are made here.", False)
+    ]
+
+    # Randomly select 25 unique places
+    selected_places = random.sample(place_pool, max_places)
+
+    # Generate 25 unique positions in the 8x8 grid starting at (5, 15)
+    possible_positions = [(row, col) for row in range(start_row, start_row + grid_size)
+                          for col in range(start_col, start_col + grid_size)]
+    place_positions = random.sample(possible_positions, max_places)
+
+    # Combine positions with places into final dictionary
+    place_dict = {}
+    for pos, (name, symbol, desc, hidden) in zip(place_positions, selected_places):
+        place_dict[pos] = {
+            "name": name,
+            "symbol": symbol,
+            "description": desc,
+            "hidden": hidden,
+        }
+
+    return place_dict
+
 
 
 def generate_clues():
@@ -138,15 +204,16 @@ def handle_villager_encounter(player):
 def run_level(player):
     level_three_intro()
     level_three_training()
+    adal_places = generate_adal_places()
 
     player.update({
-        "piece":"rook",
+        "piece": "rook",
         "position": [5, 15],
         "suspicion": 0,
         "found_clues": [],
         "gold": 100,
         "health": 100,
-        "next_task":""
+        "next_task": ""
     })
     save_player(player)
     update_display(["" for _ in range(24)])
