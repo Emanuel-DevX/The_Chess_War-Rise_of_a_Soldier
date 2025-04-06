@@ -19,7 +19,7 @@ Usage:
 """
 from colorama import Fore, Style
 import re, json, time
-from map import setup_game_environment, update_player_on_map
+from map import setup_game_environment, update_player_on_map, get_adal_map
 from player_manager import load_player, player_status
 
 FILE_NAME = "display_text.json"
@@ -150,7 +150,7 @@ def make_status_box(status_message):
     return box
 
 
-def update_display(display_text, save_text=False, status=True):
+def update_display(display_text, save_text=False, status=True, game_map=None):
     """
     Update and print the game display with map and status information.
 
@@ -166,10 +166,14 @@ def update_display(display_text, save_text=False, status=True):
     :postcondition: Print formatted two-column display (left: messages/status, right: map).
     """
     print("\n" * 20)
-    game_map = setup_game_environment()
+    if not game_map:
+        game_map = setup_game_environment()
+
     player = load_player()
     if player["position"] != [0, 0]:
-        update_player_on_map(game_map, player["position"])
+        update_player_on_map(game_map, player['position'])
+    if player["piece"] == "rook":
+        game_map = get_adal_map()
     status_box = make_status_box(player_status())
     status_len = len(status_box)
 
