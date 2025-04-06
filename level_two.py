@@ -307,6 +307,7 @@ def accuse_spy(suspects, true_spy, player):
                         f"You wrongly accused {accused}!",
                         f"The true spy was {true_spy}.",
                         "Your reputation has suffered.",
+                        f"You must find {true_spy} before you run out of moves.",
 
                     ], save_text=True)
                     player["reputation"] = player.get("reputation", 0) - 10
@@ -423,7 +424,7 @@ def run_level(player):
 
         desired_move = get_bishop_move_choice()
         if not desired_move:
-            update_display(["Invalid move for a bishop! Try again."])
+            update_display(["Invalid move for a bishop! Try again."], game_map=game_map)
             continue
 
         current_pos = player["position"]
@@ -443,6 +444,7 @@ def run_level(player):
 
         if there_is_trap[0]:
             trap_message = there_is_trap[1]
+            update_player_on_map(game_map, new_position, current_pos)
             update_display(trap_message, save_text=True)
             player["moves_taken"] += 1
             save_player(player)
@@ -452,7 +454,7 @@ def run_level(player):
         player["moves_taken"] += 1
         save_player(player)
 
-        if player["clues_found"] >= 3 and random.random() < 0.3:
+        if player["clues_found"] >= 3:
             if handle_accusation(player, true_spy):
                 promote_player(player)
                 print_level_completion_message(2)
