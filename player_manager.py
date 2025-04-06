@@ -168,6 +168,16 @@ def player_status():
         "rook": "Spy in enemy territory to uncover the king's location."
     }
 
+    if player["piece"] == "rook":
+        status_message = [
+            f"Health: {player_hl}",
+            f"Gold: {player_gd}",
+            f"Total suspicion: {player['suspicion']}%",
+            f"Next task: {player["next_task"]}"
+            f"Your goal: {goals[player['piece']]}"
+        ]
+        return status_message
+
     status_message = [
         f"Health: {player_hl}",
         f"Gold: {player_gd}",
