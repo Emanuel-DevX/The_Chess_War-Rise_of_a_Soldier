@@ -1,3 +1,5 @@
+from player_manager import load_player
+
 def create_chess_board():
     """
     Generate a 8x8 chess board pattern with alternating squares.
@@ -245,7 +247,10 @@ def update_player_on_map(game_map, new_position, old_position=None):
         game_map[old_position[0]][old_position[1]] = "   "
 
 
-def setup_game_environment():
+def add_extra_places():
+    pass
+
+def setup_game_environment(rook_map=False):
     game_map = initialize_game_map()
 
     place_tiles_on_map(game_map, create_forest_tiles(), "🌲 ")
@@ -255,8 +260,17 @@ def setup_game_environment():
     place_tiles_on_map(game_map, create_level_walls(), "🏛️ ")
 
     place_chess_board(game_map)
+    if rook_map:
+        add_extra_places()
 
     return game_map
+
+def get_adal_map():
+    player = load_player()
+    adal_map = setup_game_environment()
+    adal_map[player["position"][0]][1] = "🟡 "
+
+    return adal_map
 
 
 
