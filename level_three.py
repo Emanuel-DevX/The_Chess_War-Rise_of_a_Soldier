@@ -266,7 +266,38 @@ def generate_tasks():
 
 
 def handle_tasks(player, adal_places):
-    pass
+    current_pos = player["position"]
+
+    # Confirm this is a valid place on the map
+    if current_pos not in adal_places:
+        update_display(["You're wandering... there's nothing here."])
+        return
+
+    place_data = adal_places[current_pos]
+    place_name = place_data["name"]
+
+    # Dictionary of places mapped to their handler functions
+    place_handlers = {
+        "adal market": handle_market_task,
+        "fake_translator": handle_translator_task,
+        "St. George Shrine": handle_church_task,
+        "church": handle_shrine_task,
+        "oracle": handle_oracle_task,
+        "hidden message": handle_message_task,
+        "enemy_king": handle_final_battle,
+        "drum circle": handle_trap,
+        "scorpion trap": handle_trap,
+        "ambush": handle_trap
+    }
+
+    # Use the correct function, or default to nothing
+    handler = place_handlers.get(place_name)
+
+    if handler:
+        handler(player, adal_places)
+    else:
+        update_display([f"You're at {place_name}. There's nothing story-related here yet."])
+
 
 def run_level(player):
     level_three_intro()
@@ -295,10 +326,10 @@ def run_level(player):
     update_display(start_mission_text, save_text=True)
     clues = generate_clues()
 
-    task = generate_tasks()
+    player["tasks"] = generate_tasks()
 
     found_king = False
-    player["next_task"] = next(task)
+    player["next_task"] = next(player["tasks"])
     save_player(player)
     update_display([f"Your next task is to {player['next_task']}"])
 
