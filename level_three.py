@@ -374,6 +374,38 @@ def handle_oracle_task(player, adal_places):
             update_display(["'Come back when you have the answer.'"])
 
 
+def handle_final_battle(player, adal_map):
+    update_display([
+        "🔴 You approach the enemy king's hiding place.",
+        "Queen Yodit stands guard, sword drawn.",
+        "What will you do?",
+        "1. Attempt a solo attack",
+        "2. Return and inform your king"
+    ])
+    choice = input("> ").strip()
+
+    if choice == "1":
+        update_display([
+            "⚔️ You charge forward, facing Queen Yodit in a fierce duel...",
+            "You fight valiantly... but she strikes you down.",
+            "🩸 Your mission ends in tragedy."
+        ])
+        player["status"] = "defeated"
+
+    elif choice == "2":
+        update_display([
+            "🏇 You return to your king with the message.",
+            "Reinforcements arrive. Together, you battle Queen Yodit.",
+            "After a brutal fight, she falls. The king is captured. 🎯",
+            "Victory is yours!"
+        ])
+        player["status"] = "victorious"
+
+    else:
+        update_display(["You hesitate, and the moment passes."])
+
+
+
 
 def handle_tasks(player, adal_places):
     current_pos = player["position"]
@@ -389,9 +421,7 @@ def handle_tasks(player, adal_places):
     # Dictionary of places mapped to their handler functions
     place_handlers = {
         "adal market": handle_market_task,
-        "fake_translator": handle_translator_task,
-        "St. George Shrine": handle_church_task,
-        "church": handle_shrine_task,
+        "St. George Shrine": handle_shrine_task,
         "oracle": handle_oracle_task,
         "hidden message": handle_message_task,
         "enemy_king": handle_final_battle,
