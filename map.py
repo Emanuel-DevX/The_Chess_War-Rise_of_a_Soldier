@@ -1,4 +1,5 @@
 from player_manager import load_player
+from colorama import Fore, Style
 
 def create_chess_board():
     """
@@ -242,7 +243,7 @@ def print_game_map(game_map):
 
 
 def update_player_on_map(game_map, new_position, old_position=None):
-    game_map[new_position[0]][new_position[1]] = "🔵 "
+    game_map[new_position[0]][new_position[1]] = "👤 "
     if old_position:
         game_map[old_position[0]][old_position[1]] = "   "
 
@@ -267,8 +268,16 @@ def setup_game_environment(rook_map=False):
 
 def get_adal_map():
     player = load_player()
+    player_pos_x, player_pos_y = player["position"]
+    visible_places = player["visible places"]
     adal_map = setup_game_environment()
-    adal_map[player["position"][0]][1] = "🟡 "
+    adal_map[player_pos_x][player_pos_y] = "🟡 "
+
+
+    for _, data in visible_places.items():
+        location = data["position"]
+        loc_x, loc_y = location
+        adal_map[loc_x][loc_y] = data["symbol"]
 
     return adal_map
 
