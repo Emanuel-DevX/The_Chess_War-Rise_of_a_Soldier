@@ -41,7 +41,7 @@ def validate_move(board_start, row, col, direction):
         return True
     elif direction == 'east' and col < board_start_col + 7:
         return True
-    elif direction == 'west' and col > board_start_row:
+    elif direction == 'west' and col > board_start_col:
         return True
     elif direction == 'north_east' and row > board_start_row and col < board_start_col + 7:
         return True
