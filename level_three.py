@@ -265,6 +265,48 @@ def generate_tasks():
     yield "Lead the final strike️"
 
 
+def handle_shrine_task(player, adal_map):
+    progress = player.setdefault("progress", {})
+    current_task = player.get("current_task")
+
+    update_display([
+        "✝️ You enter the quiet church.",
+        "A priest approaches: 'How may I help you, child?'",
+        "1. To pray",
+        "2. To speak with the priest"
+    ])
+    choice = input("> ").strip()
+
+    if choice == "1":
+        update_display(["You kneel quietly in prayer."])
+        return
+
+    if choice == "2":
+        if current_task == "Go to the translator" and progress.get("found_message") and progress.get("scammed"):
+            update_display([
+                "'Ah, let me see this message... hmm.'",
+                "'This is in Ge'ez. Let me translate... wait, this message is encrypted!'",
+                "'I swear by St. George, I shall keep this safe here at the shrine until you return with the key.'"
+            ])
+            progress["message_saved"] = True
+            progress["translated_but_encrypted"] = True
+            player["current_task"] = next(player["task_gen"])
+
+        elif current_task == "Decrypt the message at the church" and progress.get("cipher_shift") == 3 and progress.get(
+                "message_saved"):
+            update_display([
+                "'Ah, you have the key? Good.'",
+                "'Decoding now... The king is being hidden in the mountain temple, guarded by Queen Yodit.'"
+            ])
+            progress["king_location_known"] = True
+            player["current_task"] = next(player["task_gen"])
+
+        else:
+            update_display(["'Come back when you're ready.'"])
+    else:
+        update_display(["You leave the church."])
+
+
 def handle_tasks(player, adal_places):
     current_pos = player["position"]
 
