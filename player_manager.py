@@ -173,7 +173,7 @@ def player_status():
             f"Health: {player_hl}",
             f"Gold: {player_gd}",
             f"Total suspicion: {player['suspicion']}%",
-            f"Next task: {player["next_task"]}"
+            f"Next task: {player["next_task"]}",
             f"Your goal: {goals[player['piece']]}"
         ]
         return status_message
