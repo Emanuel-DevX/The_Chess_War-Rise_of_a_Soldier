@@ -1,10 +1,12 @@
-import random
-
+from asyncio import current_task
 
 from display_manager import update_display
 from player_manager import save_player
 from utilities import *
 from colorama import Fore, Style
+
+import time
+import random
 
 # Game Constants
 AMHARIC_PHRASES = {
@@ -88,12 +90,12 @@ def level_three_training():
     █ PROVE YOURSELF
      Answer the elder's greeting correctly
     """
-    update_display(training_text.splitlines(),save_text=True, status=False)
+    update_display(training_text.splitlines(), save_text=True, status=False)
 
     # Simulated training
     for _ in range(5):
         test_phrase = random.choice(list(AMHARIC_PHRASES.keys()))
-        convo = ["",f"Elder says: '{test_phrase}'", "Your reply: "]
+        convo = ["", f"Elder says: '{test_phrase}'", "Your reply: "]
         response = input(f"Elder says: '{test_phrase}'\nYour reply: ").lower()
         convo[1] += response
         if response == AMHARIC_PHRASES[test_phrase]["reply"]:
@@ -101,7 +103,6 @@ def level_three_training():
         else:
             convo.append("Wrong! In real mission, this would be dangerous.")
         update_display(convo)
-
 
 
 def generate_adal_places():
@@ -124,7 +125,7 @@ def generate_adal_places():
         ("oracle", "🧙‍♂️ ", "A tent filled with scrolls, incense, and riddles.", True),
         ("scorpion trap", "🦂 ", "You hear a hiss before you feel the sting.", False),
         ("drum circle", "🪘 ", "You're pulled into a night of hypnotic dancing.", False),
-        ("adal market", "🛍 ️", "Bustling traders shout over each other to sell their wares.", True),
+        ("adal market", "🛍️ ", "Bustling traders shout over each other to sell their wares.", True),
         ("St. George Shrine", "⛪ ", "A quiet shrine where truths are sworn.", True),
         ("hidden message", "📜 ", "A cryptic note half-buried under rubble.", False),
         ("shift_locked", "🔒 ", "A strange symbol etched into stone. It won’t budge.", True),
@@ -172,12 +173,38 @@ def generate_adal_places():
 
 def update_player_visible_places(player, adal_map):
     """
-    Initializes the player's 'visible_places' dictionary with all non-hidden
+    Update the player's 'visible_places' dictionary with all non-hidden
     map locations that have a symbol (emoji).
 
     :param player: dict – Player's current data
     :param adal_map: dict – Adal map with positions and place data
     """
+    task = player.get("next_task")
+
+    # Task-to-place mapping for dynamic reveals
+    task_visibility_map = {
+        "Go to the market to find a translator": "adal market",
+        "Realize it was fake and seek the shrine": "St. George Shrine",
+        "Goto the oracle to find the shift key": "oracle",
+        "Decrypt the message at the church": "church",
+        "Locate the enemy king": "enemy_king",
+        "Lead the final strike️": "enemy_king"
+    }
+
+    # Unlock task-relevant place if hidden
+    if task in task_visibility_map:
+        target_place = task_visibility_map[task]
+        for position, place in adal_map.items():
+            if place["name"] == target_place and place.get("hidden"):
+                adal_map[position]["hidden"] = False
+
+
+    if task not in ["Goto the oracle to find the shift key", "Find the hidden message"]:
+        for position, place in adal_map.items():
+            if place["name"] == "oracle" or place["name"] == "hidden message":
+                place["hidden"] = True
+                place["symbol"] = None
+
     player["visible places"] = {}
 
     for position, place in adal_map.items():
@@ -186,6 +213,7 @@ def update_player_visible_places(player, adal_map):
                 "position": position,
                 "symbol": place["symbol"],
             }
+
 
 def generate_clues():
     """Create progressive clues with red herrings"""
@@ -224,9 +252,8 @@ def handle_villager_encounter(player):
             return False
     return True
 
+
 def get_player_movement_choice():
-
-
     """
     Prompt the user to select a movement direction from a numbered menu.
 
@@ -253,19 +280,18 @@ def get_player_movement_choice():
 
     return direction_map.get(choice, None)
 
+
 def generate_tasks():
     yield "Find the hidden message"
     yield "Go to the market to find a translator"
-    yield "Go to the translator"
     yield "Realize it was fake and seek the shrine"
     yield "Goto the oracle to find the shift key"
-    yield "Solve the oracle's puzzle"
     yield "Decrypt the message at the church"
     yield "Locate the enemy king"
     yield "Lead the final strike️"
 
 
-def handle_shrine_task(player, adal_map):
+def handle_shrine_task(player, tasks):
     progress = player.setdefault("progress", {})
     current_task = player.get("current_task")
 
@@ -290,7 +316,7 @@ def handle_shrine_task(player, adal_map):
             ])
             progress["message_saved"] = True
             progress["translated_but_encrypted"] = True
-            player["current_task"] = next(player["task_gen"])
+            player["current_task"] = next(tasks)
 
         elif current_task == "Decrypt the message at the church" and progress.get("cipher_shift") == 3 and progress.get(
                 "message_saved"):
@@ -299,7 +325,7 @@ def handle_shrine_task(player, adal_map):
                 "'Decoding now... The king is being hidden in the mountain temple, guarded by Queen Yodit.'"
             ])
             progress["king_location_known"] = True
-            player["current_task"] = next(player["task_gen"])
+            player["current_task"] = next(tasks)
 
         else:
             update_display(["'Come back when you're ready.'"])
@@ -307,9 +333,9 @@ def handle_shrine_task(player, adal_map):
         update_display(["You leave the church."])
 
 
-def handle_market_task(player, adal_places):
+def handle_market_task(player, tasks):
     progress = player.setdefault("progress", {})
-    current_task = player.get("current_task")
+    current_task = player.get("next_task")
 
     update_display([
         "🛍️ You're at the bustling Adal Market.",
@@ -322,7 +348,7 @@ def handle_market_task(player, adal_places):
         if player["gold"] >= 20:
             player["gold"] -= 20
             player["health"] = min(player["health"] + 30, 100)
-            update_display(["💊 You bought herbs and regained +30 health."])
+            update_display(["You bought herbs and regained +30 health."], save_text=True)
         else:
             update_display(["Not enough gold!"])
 
@@ -332,28 +358,28 @@ def handle_market_task(player, adal_places):
             update_display([
                 "A shady merchant whispers: 'By the river, you’ll find him.'",
                 "You rush there... only to find a fisherman. You've been tricked!"
-            ])
-            player["current_task"] = next(player["task_gen"])
+            ], save_text=True)
+            player["next_task"] = next(tasks)
         elif progress.get("scammed") and not progress.get("true_translation"):
             progress["true_translation"] = True
             update_display([
                 "'The real one swears by St. George,' a kind woman says. 'Seek the shrine.'"
-            ])
-            player["current_task"] = next(player["task_gen"])
+            ], save_text=True)
+            player["next_task"] = next(tasks)
         else:
             update_display(["You've already found the true translator."])
 
 
-
-def handle_message_task(player, adal_places):
+def handle_message_task(player, tasks):
     progress = player.setdefault("progress", {})
-    if player["current_task"] == "Find the hidden message":
-        update_display([
-            "📜 You find the hidden message scrawled on old parchment.",
-            "But it's written in a language you don't understand..."
-        ])
-        progress["found_message"] = True
-        player["current_task"] = next(player["task_gen"])
+    update_display([
+           "You find the hidden message scrawled on old parchment.",
+            "But it's written in a language you don't understand...",
+            "You will need to go to the market to find a translator."
+        ], save_text=True)
+
+    progress["found_message"] = True
+    player["next_task"] = next(tasks)
 
 
 def handle_oracle_task(player, adal_places):
@@ -405,16 +431,43 @@ def handle_final_battle(player, adal_map):
         update_display(["You hesitate, and the moment passes."])
 
 
-
-
-def handle_tasks(player, adal_places):
+def handle_trap(player, tasks):
+    place_name = ""
     current_pos = player["position"]
+    for name, data in player["visible places"].items():
+        if data["position"] == current_pos:
+            place_name = name
+            break
 
-    # Confirm this is a valid place on the map
-    if current_pos not in adal_places:
-        update_display(["You're wandering... there's nothing here."])
-        return
+    if place_name == "scorpion trap":
+        player["health"] = max(player["health"] - 15, 0)
+        update_display([
+            "🦂 A scorpion leaps out from a crack!",
+            f"{Fore.RED}It stings you before you can react. -15 health.{Style.RESET_ALL}"
+        ])
 
+    elif place_name == "ambush":
+        player["health"] = max(player["health"] - 10, 0)
+        player["gold"] = max(player["gold"] - 15, 0)
+        update_display([
+            "⚔️ You’re ambushed by enemy scouts!",
+            "-10 health, -15 gold."
+        ])
+
+    elif place_name == "drum circle":
+        update_display([
+            "🪘 You're pulled into a hypnotic drum circle!",
+            "You can’t leave... you must dance until sunrise."
+        ])
+        beats = ["BOOM", "TAK", "DUM", "BOOM-BOOM"]
+        for _ in range(6):
+            update_display([f"🎶 {random.choice(beats)}"])
+            time.sleep(random.uniform(0.4, 0.8))
+        update_display(["🌅 You finally escape as the sun rises. You're tired, but unharmed."])
+
+
+def handle_tasks(player, adal_places, tasks):
+    current_pos = player["position"]
     place_data = adal_places[current_pos]
     place_name = place_data["name"]
 
@@ -434,7 +487,7 @@ def handle_tasks(player, adal_places):
     handler = place_handlers.get(place_name)
 
     if handler:
-        handler(player, adal_places)
+        handler(player, tasks)
     else:
         update_display([f"You're at {place_name}. There's nothing story-related here yet."])
 
@@ -444,11 +497,9 @@ def run_level(player):
     level_three_training()
     adal_places = generate_adal_places()
     villagers = {location for location, data in adal_places.items() if data["symbol"] is None}
-
-
+    tasks = generate_tasks()
+    player["next_task"] = next(tasks)
     update_player_visible_places(player, adal_places)
-
-
 
     player.update({
         "piece": "rook",
@@ -457,19 +508,18 @@ def run_level(player):
         "found_clues": [],
         "gold": 100,
         "health": 100,
-        "next_task": ""
     })
-    board_start = (5,15)
+    board_start = (5, 15)
     save_player(player)
     start_mission_text = ["" for _ in range(30)]
     start_mission_text.append("Mission started. Good luck, Agent.")
     update_display(start_mission_text, save_text=True)
     clues = generate_clues()
 
-    player["task_gen"] = generate_tasks()
+
+
 
     found_king = False
-    player["next_task"] = next(player["tasks"])
     save_player(player)
     update_display([f"Your next task is to {player['next_task']}"])
 
@@ -492,7 +542,7 @@ def run_level(player):
         description = ""
 
         if new_pos in adal_places and not adal_places[new_pos]["hidden"]:
-                place_name, description = adal_places[new_pos]["name"], adal_places[new_pos]["description"]
+            place_name, description = adal_places[new_pos]["name"], adal_places[new_pos]["description"]
         update_display([f"There is {place_name} here.", f"{description}"], save_text=True)
         if new_pos in villagers:
             if handle_villager_encounter(player):
@@ -500,7 +550,9 @@ def run_level(player):
             break
 
         if any(place["position"] == new_pos for place in player["visible places"].values()):
-            handle_tasks(player, adal_places)
+            handle_tasks(player, adal_places, tasks)
+            save_player(player)
+            update_player_visible_places(player, adal_places)
 
     # update_display([f"{adal_places}"], save_text=True, status=True)
 
