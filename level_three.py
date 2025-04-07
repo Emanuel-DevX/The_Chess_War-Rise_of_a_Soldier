@@ -356,6 +356,25 @@ def handle_message_task(player, adal_places):
         player["current_task"] = next(player["task_gen"])
 
 
+def handle_oracle_task(player, adal_places):
+    progress = player.setdefault("progress", {})
+    current_task = player.get("current_task")
+
+    if current_task in ["Goto the oracle to find the shift key", "Solve the oracle's puzzle"]:
+        update_display([
+            "🧙‍♂️ The Oracle greets you: 'Answer me this:'",
+            "'What walks on four legs in the morning, two at noon, and three in the evening?'"
+        ])
+        answer = input("> ").strip().lower()
+        if "man" in answer:
+            update_display(["'Correct. The cipher shift is 3. Use it wisely.'"])
+            progress["cipher_shift"] = 3
+            player["current_task"] = next(player["task_gen"])
+        else:
+            update_display(["'Come back when you have the answer.'"])
+
+
+
 def handle_tasks(player, adal_places):
     current_pos = player["position"]
 
@@ -417,7 +436,7 @@ def run_level(player):
     update_display(start_mission_text, save_text=True)
     clues = generate_clues()
 
-    player["tasks"] = generate_tasks()
+    player["task_gen"] = generate_tasks()
 
     found_king = False
     player["next_task"] = next(player["tasks"])
