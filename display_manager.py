@@ -70,13 +70,13 @@ def save_display_text(messages):
     :postcondition: ANSI codes removed from all messages.
     :postcondition: Messages saved to JSON file with 4-space indentation.
     """
-    cleaned_messages = [clean_ansi(msg) for msg in messages]  # Strip ANSI before saving
+    # cleaned_messages = [clean_ansi(msg) for msg in messages]  # Strip ANSI before saving
     with open(FILE_NAME, "w") as file:
-        json.dump(cleaned_messages, file, indent=4)
+        json.dump(messages, file, indent=4)
 
 
 # Append new message and manage length
-def update_display_text(new_message, max_len, color=Fore.GREEN, save_text=False, colored=True):
+def update_display_text(new_message, max_len, save_text=False):
     """
     Update and format display messages with optional coloring and saving.
 
@@ -99,11 +99,7 @@ def update_display_text(new_message, max_len, color=Fore.GREEN, save_text=False,
         messages = [msg for msg in messages[:] if msg != "=" * 80]
         messages.append("=" * 80)
 
-    if colored:
-        colored_messages = [f"{color}{msg}{Style.RESET_ALL}" for msg in new_message]
-        messages += colored_messages
-    else:
-        messages += new_message
+    messages += new_message
     return messages[-max_len:] if len(messages) > max_len else messages
 
 
@@ -140,11 +136,12 @@ def make_status_box(status_message):
     """
     # Find max length for dynamic box size
     max_length = max(len(line) for line in status_message)
-    border_top = "┌" + "─" * (max_length + 2) + "┐"
-    border_bottom = "└" + "─" * (max_length + 2) + "┘"
+    border_top = Fore.YELLOW + "┌" + "─" * (max_length + 2) + "┐" + Style.RESET_ALL
+    border_bottom = Fore.YELLOW +  "└" + "─" * (max_length + 2) + "┘" +Style.RESET_ALL
 
     # Format each line to fit the box
-    formatted_lines = [f"│ {line.ljust(max_length)} │" for line in status_message]
+    color_pre, color_reset = f"{Style.BRIGHT}{Fore.LIGHTYELLOW_EX}", f"{Style.RESET_ALL}"
+    formatted_lines = [f"│{color_pre} {line.ljust(max_length)}{color_reset} │" for line in status_message]
 
     box = [border_top] + formatted_lines + [border_bottom]
     return box
@@ -182,11 +179,11 @@ def update_display(display_text, save_text=False, status=True, game_map=None):
         status_len = 0
         left_screen = []
 
-    messages = update_display_text(display_text, 32 - status_len, save_text=save_text, colored=status)
+    messages = update_display_text(display_text, 32 - status_len, save_text=save_text)
     messages_len = len(messages)
     if save_text:
-        clean_msg = [clean_ansi(msg) for msg in messages]
-        save_display_text(clean_msg)
+        # clean_msg = [clean_ansi(msg) for msg in messages]
+        save_display_text(messages)
     if messages_len + status_len < 30:
         left_screen += ["" for _ in range(30 - (status_len + messages_len))]
 
