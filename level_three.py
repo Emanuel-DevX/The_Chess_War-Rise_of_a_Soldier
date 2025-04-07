@@ -344,6 +344,18 @@ def handle_market_task(player, adal_places):
             update_display(["You've already found the true translator."])
 
 
+
+def handle_message_task(player, adal_places):
+    progress = player.setdefault("progress", {})
+    if player["current_task"] == "Find the hidden message":
+        update_display([
+            "📜 You find the hidden message scrawled on old parchment.",
+            "But it's written in a language you don't understand..."
+        ])
+        progress["found_message"] = True
+        player["current_task"] = next(player["task_gen"])
+
+
 def handle_tasks(player, adal_places):
     current_pos = player["position"]
 
