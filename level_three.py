@@ -307,6 +307,43 @@ def handle_shrine_task(player, adal_map):
         update_display(["You leave the church."])
 
 
+def handle_market_task(player, adal_places):
+    progress = player.setdefault("progress", {})
+    current_task = player.get("current_task")
+
+    update_display([
+        "🛍️ You're at the bustling Adal Market.",
+        "1. Buy medicine (20 gold, +30 health)",
+        "2. Ask about a translator"
+    ])
+    choice = input("> ").strip()
+
+    if choice == "1":
+        if player["gold"] >= 20:
+            player["gold"] -= 20
+            player["health"] = min(player["health"] + 30, 100)
+            update_display(["💊 You bought herbs and regained +30 health."])
+        else:
+            update_display(["Not enough gold!"])
+
+    elif choice == "2":
+        if current_task == "Go to the market to find a translator":
+            progress["scammed"] = True
+            update_display([
+                "A shady merchant whispers: 'By the river, you’ll find him.'",
+                "You rush there... only to find a fisherman. You've been tricked!"
+            ])
+            player["current_task"] = next(player["task_gen"])
+        elif progress.get("scammed") and not progress.get("true_translation"):
+            progress["true_translation"] = True
+            update_display([
+                "'The real one swears by St. George,' a kind woman says. 'Seek the shrine.'"
+            ])
+            player["current_task"] = next(player["task_gen"])
+        else:
+            update_display(["You've already found the true translator."])
+
+
 def handle_tasks(player, adal_places):
     current_pos = player["position"]
 
