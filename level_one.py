@@ -7,6 +7,7 @@ Goal: Move your pawn to the final rank
 - Limited moves available
 - Reach the end to win
 """
+from player_manager import save_player
 from utilities import *
 from map import *
 import player_manager
@@ -209,7 +210,7 @@ def confirm_move(player, direction):
         elif event == 2:
             display_text.append("⚠️ The path might put  dangerous, proceed with caution!")
         elif event == 3:
-            print("Blocked! You must wait!")
+            update_display(f"{Fore.RED}Blocked! You must wait!{Style.RESET_ALL}",save_text=True)
             time.sleep(2)
             return False
         else:
@@ -254,7 +255,8 @@ def run_level(player):
     while player["movement_points"] >= 0:
 
         if player["position"][0] == board_start[0]:  # Rank 8 reached
-            promote_player(player)
+            player_manager.promote_player(player)
+            save_player(player)
             break
         desired_move = get_pawn_direction_choice()
         if not desired_move:
@@ -264,7 +266,7 @@ def run_level(player):
         col = player["position"][1]
 
         if not validate_move(board_start, row, col, desired_move):
-            update_display(["Invalid move! Try again."], save_text=True)
+            update_display([f"{Fore.RED}Invalid move! Try again.{Style.RESET_ALL}"], save_text=True)
             continue
 
         new_position = move(row, col, desired_move)

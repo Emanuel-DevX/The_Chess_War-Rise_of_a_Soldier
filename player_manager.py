@@ -138,6 +138,8 @@ def promote_player(player):
         player["gold"] += 30
         player["knowledge"].append("Master of Straight-Line Power")
         player["completed_challenges"].append("Level 2 Completed")
+        player["position"] = [0, 0]
+
     elif player["piece"] == "rook":
         player["piece"] = "overlord"
         player["gold"] += 50
