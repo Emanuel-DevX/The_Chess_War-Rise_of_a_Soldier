@@ -1,5 +1,5 @@
 from player_manager import load_player
-from colorama import Fore, Style
+
 
 def create_chess_board():
     """
@@ -235,23 +235,13 @@ def place_chess_board(game_map, start_row=2, start_col=2):
     add_chess_board_labels(game_map, start_row, start_col)
 
 
-def print_game_map(game_map):
-    """Print the game map with row numbers"""
-    for row_number, row in enumerate(game_map):
-        print(f"{row_number:>100}", end="")
-        print("".join(row))
-
-
 def update_player_on_map(game_map, new_position, old_position=None):
     game_map[new_position[0]][new_position[1]] = "👤 "
     if old_position:
         game_map[old_position[0]][old_position[1]] = "   "
 
 
-def add_extra_places():
-    pass
-
-def setup_game_environment(rook_map=False):
+def setup_game_environment():
     game_map = initialize_game_map()
 
     place_tiles_on_map(game_map, create_forest_tiles(), "🌲 ")
@@ -261,10 +251,9 @@ def setup_game_environment(rook_map=False):
     place_tiles_on_map(game_map, create_level_walls(), "🏛️ ")
 
     place_chess_board(game_map)
-    if rook_map:
-        add_extra_places()
 
     return game_map
+
 
 def get_adal_map():
     player = load_player()
@@ -272,7 +261,6 @@ def get_adal_map():
     visible_places = player["visible places"]
     adal_map = setup_game_environment()
     adal_map[player_pos_x][player_pos_y] = "🟡 "
-
 
     for _, data in visible_places.items():
         location = data["position"]
