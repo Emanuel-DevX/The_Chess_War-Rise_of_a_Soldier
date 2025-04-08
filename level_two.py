@@ -17,6 +17,7 @@ from display_manager import update_display
 from map import update_player_on_map, setup_game_environment
 from player_manager import save_player, promote_player
 from utilities import *
+from colorama import Fore, Style
 import random
 
 
@@ -59,7 +60,7 @@ def level_two_intro():
 
 
 def level_two_training():
-    training_text = """
+    training_text = f"""
     ────────────────
     LEVEL 2 TRAINING 
     ────────────────
@@ -67,7 +68,7 @@ def level_two_training():
     As a **bishop**, your movement is now limited to the color of your starting square.  
     If you begin on a **dark square**, you will always remain on dark squares.  
     If you start on a **light square**, you will always move on light squares.
-
+        {Fore.LIGHTYELLOW_EX}
         ┌───────────────────────────┐
         │   MOVE OPTIONS:           │
         │     * North West   (↖)    │
@@ -75,7 +76,7 @@ def level_two_training():
         │     * South West   (↙)    │
         │     * South East   (↘)    │
         └───────────────────────────┘
-
+        {Style.RESET_ALL}
     ⚔️ **Movement Rules:**
       * You can only travel on **your color** (dark or light).
       * No jumping over obstacles.
@@ -148,7 +149,8 @@ def place_bishop(player, board_start):
         choice = input("Enter 'L' for light square ⬜ or 'D' for dark square ⬛: ").upper().strip()
 
         if choice not in ['L', 'D']:
-            print("Invalid choice. Please enter 'L' or 'D'.")
+            update_display([f"{Fore.RED}Invalid choice.{Style.RESET_ALL} Please enter 'L' or 'D'."],
+                           save_text=True)
             continue
 
         # Determine starting positions based on choice
@@ -220,10 +222,13 @@ def get_bishop_move_choice():
     """
     direction_menu = [
         "Choose a direction for the bishop:",
-        "1. North-East (↗)",
-        "2. North-West (↖)",
-        "3. South-East (↘)",
-        "4. South-West (↙)"
+
+        f"{Fore.LIGHTMAGENTA_EX}"
+        f"1. North-West (↖)",
+        "2. North-East (↗)",
+        "3. South-West (↙)"
+        f"4. South-East (↘)"
+        f"{Style.RESET_ALL}",
     ]
 
     update_display(direction_menu)
@@ -231,10 +236,10 @@ def get_bishop_move_choice():
     choice = input("Enter a number (1-4): ")
 
     direction_map = {
-        '1': 'north_east',
-        '2': 'north_west',
-        '3': 'south_east',
-        '4': 'south_west'
+        '2': 'north_east',
+        '1': 'north_west',
+        '4': 'south_east',
+        '3': 'south_west'
     }
 
     return direction_map.get(choice, None)
@@ -261,12 +266,12 @@ def discover_clue(player, clues):
 
     clue_message = [
         "You discovered a clue!",
-        clue
+        Fore.BLUE + clue + Style.RESET_ALL
     ]
 
-    if random.random() < 0.2 and is_genuine:
-        # Add an insight for genuine clues (20% chance)
-        clue_message.append("Your intuition tells you this clue seems important.")
+    if random.random() < 0.4 and is_genuine:
+        # Add an insight for genuine clues (40% chance)
+        clue_message.append(f"{Fore.GREEN}Your intuition tells you this clue seems important.{Style.RESET_ALL}")
 
     return clue_message
 
@@ -288,9 +293,9 @@ def accuse_spy(suspects, true_spy, player):
     """
     accusation_menu = ["Who do you think is the spy?"]
     for index, suspect in enumerate(suspects, 1):
-        accusation_menu.append(f"{index}. {suspect}")
+        accusation_menu.append(f"{Fore.LIGHTYELLOW_EX}{index}. {suspect}{Style.RESET_ALL}")
 
-    update_display(accusation_menu)
+    update_display(accusation_menu, save_text=True)
 
     while True:
         choice = input(f"Enter a number (1-{len(suspects)}): ")
@@ -299,13 +304,13 @@ def accuse_spy(suspects, true_spy, player):
             if 0 <= index < len(suspects):
                 accused = suspects[index]
                 if accused == true_spy:
-                    update_display(["You've uncovered the spy! Your mission is a success."])
+                    update_display(["You've uncovered the spy! Your mission is a success."], save_text=True)
                     player["reputation"] = player.get("reputation", 0) + 20
                     return True
                 else:
                     update_display([
                         f"You wrongly accused {accused}!",
-                        f"The true spy was {true_spy}.",
+                        f"The true spy was {Fore.RED}{true_spy}{Style.RESET_ALL}.",
                         "Your reputation has suffered.",
                         f"You must find {true_spy} before you run out of moves.",
 
@@ -365,14 +370,14 @@ def handle_random_events(player, clues):
     :postcondition: Update player's clues_found count if clue discovered
     :postcondition: Display clue message if one is found
     """
-    if random.random() < 0.3 and clues:  # 30% chance to find clue
+    if random.random() < 0.4 and clues:  # 40% chance to find clue
         clue_message = discover_clue(player, clues)
         if clue_message:
             player["clues_found"] += 1
             update_display(clue_message, save_text=True)
             return
 
-    if random.random() < 0.2:  # 20% chance for random encounter
+    if random.random() < 0.3:  # 30% chance for random encounter
         event_message = encounter_event(player)
         update_display(["Event: " + event_message], save_text=True)
 
@@ -390,7 +395,8 @@ def handle_accusation(player, true_spy):
     :postcondition: Modify player's reputation based on accusation outcome.
     :return: True if player makes correct accusation, False otherwise.
     """
-    update_display(["You have enough information to make an accusation."], save_text=True)
+    msg = [f"{Fore.LIGHTYELLOW_EX}You have enough information to make an accusation.{Style.RESET_ALL}"]
+    update_display(msg, save_text=True)
     accusation_choice = input("Do you want to accuse someone now? (y/n): ").lower()
 
     if accusation_choice == 'y':
@@ -429,7 +435,7 @@ def run_level(player):
 
         current_pos = player["position"]
         if not validate_move(board_start, current_pos[0], current_pos[1], desired_move):
-            update_display(["Invalid move! Try again."], save_text=True)
+            update_display([f"{Fore.RED}Invalid move! Try again.{Style.RESET_ALL}"], save_text=True)
             continue
 
         new_position = move(current_pos[0], current_pos[1], desired_move)
@@ -458,13 +464,14 @@ def run_level(player):
             if handle_accusation(player, true_spy):
                 promote_player(player)
                 print_level_completion_message(2)
-                return  # Level completed successfully
+                return True  # Level completed successfully
             max_moves -= 3  # Penalty for wrong accusation_moves -= 3
             player["max_moves"] = max_moves
             save_player(player)
 
     save_player(player)
     if player["movement_points"] <= 0:
-        update_display(["You're out of movement points! Game over."])
+        update_display([f"{Fore.RED}You're out of movement points! Game over.{Style.RESET_ALL}"])
     if player["health"] <= 0:
-        update_display(["You've died! Game over."])
+        update_display([f"{Fore.RED}You've died! Game over.{Style.RESET_ALL}"])
+    return False

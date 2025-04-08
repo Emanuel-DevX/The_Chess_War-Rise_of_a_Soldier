@@ -13,12 +13,6 @@ AMHARIC_PHRASES = {
     "Wedet eyehedk nw?": {"reply": "church", "fail_penalty": 5}
 }
 
-TRAP_TYPES = {
-    "Scorpion": "A venomous sting! (-25 health)",
-    "Ambush": "Led into ambush! (-15 health & lose 20 gold)",
-    "Drum Circle": "Forced to dance until sunrise! (Skip 2 turns)"
-}
-
 
 # noinspection SpellCheckingInspection
 def level_three_intro():
@@ -81,7 +75,7 @@ def level_three_training():
     ≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈
     
     This is the last time you will get the translations beware!
-    You will be dressed in yellow to easily blend in with the locals.
+    You will be dressed in {Fore.LIGHTYELLOW_EX}yellow{Fore.LIGHTYELLOW_EX} to easily blend in with the locals.
     
     █ SUSPICION METER
     Every wrong answer increases suspicion.
@@ -220,7 +214,6 @@ def update_player_visible_places(player, adal_map):
 
 
 # noinspection SpellCheckingInspection
-
 def handle_villager_encounter(player):
     """Random cultural challenge"""
     phrase, data = random.choice(list(AMHARIC_PHRASES.items()))
@@ -325,7 +318,8 @@ def handle_shrine_task(player, tasks):
               progress.get("message_saved")):
             update_display([
                 "'Ah, you have the key? Good.'",
-                "'Decoding now... The king is being hidden in the mountain temple, guarded by Queen Yodit.'"
+                f"'Decoding now... {Fore.RED}The king{Style.RESET_ALL} is being hidden in the mountain temple, "
+                f"guarded by {Fore.RED}Queen Yodit{Style.RESET_ALL}.'"
             ], save_text=True)
             progress["king_location_known"] = True
             player["next_task"] = next(tasks)
@@ -544,7 +538,7 @@ def initialize_level_three(player):
 
     save_player(player)
     update_display([""] * 30 + ["Mission started. Good luck, Agent."], save_text=True)
-    update_display([f"Your next task is to {Fore.LIGHTYELLOW_EX}{player['next_task']}{Style.RESET_ALL}"],
+    update_display([f"Your next task is to {Fore.LIGHTBLUE_EX}{player['next_task']}{Style.RESET_ALL}"],
                    save_text=True)
 
     return adal_places, villagers, tasks
