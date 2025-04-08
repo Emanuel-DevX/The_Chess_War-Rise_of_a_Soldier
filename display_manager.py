@@ -104,7 +104,7 @@ def loading_screen():
 
     print(load_msg)
     for _ in range(80):
-        print(Fore.GREEN+"██"+Style.RESET_ALL, end="")
+        print(Fore.GREEN + "██" + Style.RESET_ALL, end="")
         time.sleep(0.1)
 
 
@@ -145,9 +145,7 @@ def update_display_text(new_message, max_len, save_text=False):
 
     :param new_message: Message or list of messages to add.
     :param max_len: Maximum number of messages to retain.
-    :param color: ANSI color code (default: Fore.GREEN).
     :param save_text: Whether to save with separator (default: False).
-    :param colored: Whether to apply coloring (default: True).
     :precondition: new_message must be string or list of strings.
     :precondition: max_len must be positive integer.
     :postcondition: Load existing messages.
@@ -200,7 +198,7 @@ def make_status_box(status_message):
     # Find max length for dynamic box size
     max_length = max(len(line) for line in status_message)
     border_top = Fore.YELLOW + "┌" + "─" * (max_length + 2) + "┐" + Style.RESET_ALL
-    border_bottom = Fore.YELLOW +  "└" + "─" * (max_length + 2) + "┘" +Style.RESET_ALL
+    border_bottom = Fore.YELLOW + "└" + "─" * (max_length + 2) + "┘" + Style.RESET_ALL
 
     # Format each line to fit the box
     color_pre, color_reset = f"{Style.BRIGHT}{Fore.LIGHTYELLOW_EX}", f"{Style.RESET_ALL}"
@@ -217,6 +215,7 @@ def update_display(display_text, save_text=False, status=True, game_map=None):
     :param display_text: Text or list of text lines to display.
     :param save_text: Whether to save the display text (default: False).
     :param status: Whether to show player status (default: True).
+    :param game_map: A list of symbols and tiles representing the game map.
     :precondition: display_text must be string or list of strings.
     :postcondition: Clear the screen (20 newlines).
     :postcondition: Load game map and player data.
@@ -245,7 +244,6 @@ def update_display(display_text, save_text=False, status=True, game_map=None):
     messages = update_display_text(display_text, 32 - status_len, save_text=save_text)
     messages_len = len(messages)
     if save_text:
-        # clean_msg = [clean_ansi(msg) for msg in messages]
         save_display_text(messages)
     if messages_len + status_len < 30:
         left_screen += ["" for _ in range(30 - (status_len + messages_len))]

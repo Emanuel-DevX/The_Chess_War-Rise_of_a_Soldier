@@ -60,42 +60,6 @@ def load_player():
         return initialize_player()
 
 
-def update_player_attribute(key, value):
-    """
-    Update specified player attribute and save changes.
-
-    :param key: String representing attribute name to update.
-    :param value: New value to assign to the attribute.
-    :precondition: Key must exist in player dictionary.
-    :precondition: Value must be valid for specified attribute.
-    :postcondition: Load current player data.
-    :postcondition: Modify specified attribute.
-    :postcondition: Save updated player data.
-    :return: Updated player dictionary.
-    """
-    player = load_player()
-    player[key] = value
-    save_player(player)
-    return player
-
-
-def add_to_inventory(item):
-    """
-    Add specified item to player's inventory and save changes.
-
-    :param item: Object to add to inventory (typically string or dict).
-    :precondition: Player data must be loadable.
-    :precondition: Player dictionary must have 'inventory' key.
-    :postcondition: Item appended to inventory list.
-    :postcondition: Updated player data saved.
-    :return: Updated player dictionary.
-    """
-    player = load_player()
-    player["inventory"].append(item)
-    save_player(player)
-    return player
-
-
 def promote_player(player):
     """
     Promote the player.
