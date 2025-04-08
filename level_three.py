@@ -3,6 +3,8 @@ from colorama import Fore, Style
 from display_manager import update_display
 from player_manager import save_player
 from utilities import *
+from itertools import product
+import random
 
 # Game Constants
 # noinspection SpellCheckingInspection
@@ -146,9 +148,11 @@ def generate_adal_places():
     # Randomly select 25 unique places
     selected_places = random.sample(place_pool, max_places)
 
-    # Generate 25 unique positions in the 8x8 grid starting at (5, 15)
-    possible_positions = [(row, col) for row in range(start_row, start_row + grid_size)
-                          for col in range(start_col, start_col + grid_size)]
+    # Generate 25 unique positions in the 8x8 grid starting at (5, 15)]
+    possible_positions = list(product(
+        range(start_row, start_row + grid_size),
+        range(start_col, start_col + grid_size)
+    ))
     possible_positions.pop()
     place_positions = random.sample(possible_positions, max_places)
 
