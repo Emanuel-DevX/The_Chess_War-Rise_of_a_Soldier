@@ -96,23 +96,6 @@ def add_to_inventory(item):
     return player
 
 
-def add_knowledge(info):
-    """
-    Add new information to player's knowledge base.
-
-    :param info: String containing knowledge to add.
-    :precondition: Player data must be loadable.
-    :precondition: Player dictionary must have 'knowledge' key.
-    :postcondition: Info appended to knowledge list.
-    :postcondition: Updated player data saved.
-    :return: Updated player dictionary.
-    """
-    player = load_player()
-    player["knowledge"].append(info)
-    save_player(player)
-    return player
-
-
 def promote_player(player):
     """
     Promote the player.
