@@ -226,7 +226,7 @@ def get_bishop_move_choice():
         f"{Fore.LIGHTMAGENTA_EX}"
         f"1. North-West (↖)",
         "2. North-East (↗)",
-        "3. South-West (↙)"
+        "3. South-West (↙)",
         f"4. South-East (↘)"
         f"{Style.RESET_ALL}",
     ]

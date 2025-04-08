@@ -1,5 +1,5 @@
 import random
-
+from colorama import Fore, Style
 
 def validate_move(board_start, row, col, direction):
     """
@@ -174,9 +174,9 @@ def check_for_trap(position, traps, player):
         player["health"] -= damage
 
         trap_message = [
-            "⚠️ YOU TRIGGERED A TRAP! ⚠️",
+            f"{Fore.RED}⚠️ YOU TRIGGERED A TRAP! ⚠️",
             f"You take {damage} damage.",
-            f"Remaining health: {player['health']}"
+            f"Remaining health: {player['health']}{Style.RESET_ALL}"
         ]
 
         # Add to player knowledge

@@ -89,7 +89,7 @@ def level_three_training():
     ≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈
     
     This is the last time you will get the translations beware!
-    You will be dressed in {Fore.LIGHTYELLOW_EX}yellow{Fore.LIGHTYELLOW_EX} to easily blend in with the locals.
+    You will be dressed in {Fore.LIGHTYELLOW_EX}yellow{Style.RESET_ALL} to easily blend in with the locals.
     
     █ SUSPICION METER
     Every wrong answer increases suspicion.
@@ -688,7 +688,7 @@ def run_level(player):
     adal_places, villagers, tasks = initialize_level_three(player)
 
     save_player(player)
-    update_display([f"Your next task is to {Fore.LIGHTYELLOW_EX}"
+    update_display([f"Your next task is to {Fore.LIGHTBLUE_EX}"
                     f"{player['next_task']}{Style.RESET_ALL}"], save_text=True)
 
     while not found_king and player["health"] > 0 and player["suspicion"] < 100:

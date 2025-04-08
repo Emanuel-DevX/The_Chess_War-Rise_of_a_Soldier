@@ -12,6 +12,7 @@ from utilities import *
 from map import *
 from display_manager import update_display
 import random, time
+from colorama import Fore, Style
 
 
 def level_one_intro():
@@ -214,7 +215,7 @@ def confirm_move(player, direction):
         elif event == 2:
             display_text.append("⚠️ The path might put  dangerous, proceed with caution!")
         elif event == 3:
-            update_display(f"{Fore.RED}Blocked! You must wait!{Style.RESET_ALL}", save_text=True)
+            update_display([f"{Fore.RED}Blocked! You must wait!{Style.RESET_ALL}"], save_text=True)
             time.sleep(2)
             return False
         else:
