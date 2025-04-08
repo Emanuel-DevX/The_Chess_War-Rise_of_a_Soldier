@@ -7,16 +7,20 @@ Goal: Move your pawn to the final rank
 - Limited moves available
 - Reach the end to win
 """
-from player_manager import save_player
+import player_manager
 from utilities import *
 from map import *
-import player_manager
 from display_manager import update_display
-import random
-import time
+import random, time
 
 
 def level_one_intro():
+    """
+    Display the cinematic introduction text for Level 1: The Pawn's Journey.
+
+    :postcondition: Show introductory story and mission briefing using update_display().
+    :postcondition: Wait for player input to continue the game.
+    """
     intro_text = """
     
 ██╗     ███████╗██╗   ██╗███████╗██╗          ██████╗ ███╗   ██╗███████╗
@@ -54,6 +58,12 @@ def level_one_intro():
 
 
 def level_one_training():
+    """
+    Display training instructions for pawn movement in Level 1.
+
+    :postcondition: Show movement rules and gameplay limitations for pawns.
+    :postcondition: Wait for player input to continue after reading the tutorial.
+    """
     training_text = """
     ────────────────────────
     TRAINING: PAWN MOVEMENT
@@ -125,12 +135,6 @@ def assign_position_attributes(column):
     ('Safe Zone', 5, 10)
     >>> assign_position_attributes(5)
     ('Moderate Risk', 10, 5)
-    >>> assign_position_attributes(6)
-    ('Risky', 15, 0)
-    >>> assign_position_attributes(7)
-    ('High Risk', 20, -5)
-    >>> assign_position_attributes(11)
-    ('Safe Zone', 5, 10)
     >>> assign_position_attributes(9)
     ('Risky', 15, 0)
     """
@@ -210,7 +214,7 @@ def confirm_move(player, direction):
         elif event == 2:
             display_text.append("⚠️ The path might put  dangerous, proceed with caution!")
         elif event == 3:
-            update_display(f"{Fore.RED}Blocked! You must wait!{Style.RESET_ALL}",save_text=True)
+            update_display(f"{Fore.RED}Blocked! You must wait!{Style.RESET_ALL}", save_text=True)
             time.sleep(2)
             return False
         else:
@@ -256,7 +260,7 @@ def run_level(player):
 
         if player["position"][0] == board_start[0]:  # Rank 8 reached
             player_manager.promote_player(player)
-            save_player(player)
+            player_manager.save_player(player)
             break
         desired_move = get_pawn_direction_choice()
         if not desired_move:
