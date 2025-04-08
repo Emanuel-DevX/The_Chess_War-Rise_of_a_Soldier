@@ -121,21 +121,6 @@ def column_to_file(column):
     return chr(65 + column)
 
 
-def check_ambush(player):
-    """
-    Check if the player encounters an ambush based on their boldness level.
-
-    :param player: A dictionary representing the player's attributes.
-    :postcondition: Reduces health if an ambush occurs.
-    """
-    if player["boldness"] > 3 and random.random() < (player["boldness"] * 0.1):
-        damage = random.randint(20, 40)
-        player["health"] -= damage
-        print(f"💀 Ambush! You lost {damage} health points!")
-    else:
-        print("🛡️ No ambush this time.")
-
-
 def print_level_completion_message(level):
     """
     Print a congratulatory message when a player completes a level.
