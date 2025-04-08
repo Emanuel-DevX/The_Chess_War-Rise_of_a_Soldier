@@ -278,6 +278,22 @@ def get_player_movement_choice():
 
 
 def generate_tasks():
+    """
+    Yield a sequence of mission tasks for the player in order.
+
+    :postcondition: Returns a generator yielding tasks in fixed storyline sequence.
+    :yield: String representing the next task in the storyline.
+
+    >>> tasks = generate_tasks()
+    >>> next(tasks)
+    'Find the hidden message'
+    >>> next(tasks)
+    'Go to the market to find a translator'
+    >>> next(tasks)
+    'Realize it was fake and seek the shrine'
+    >>> next(tasks)
+    'Goto the oracle to find the shift key'
+    """
     yield "Find the hidden message"
     yield "Go to the market to find a translator"
     yield "Realize it was fake and seek the shrine"
