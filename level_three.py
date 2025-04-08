@@ -1,10 +1,22 @@
-import time
+"""
+level_three.py – Level 3: The Rook's Shadow Campaign
+
+Implements the third level of the Chess War RPG.
+
+Handles:
+- Level intro and cultural training
+- Map generation and task progression
+- Event handling (oracle, shrine, traps, battle)
+- Main game loop via run_level()
+
+Uses colorama for styled output and depends on display_manager, player_manager, and utilities.
+"""
 from colorama import Fore, Style
 from display_manager import update_display
 from player_manager import save_player
 from utilities import *
 from itertools import product
-import random
+import random, time
 
 # Game Constants
 # noinspection SpellCheckingInspection
@@ -255,8 +267,7 @@ def get_player_movement_choice():
 
     :postcondition: Display the direction menu using update_display()
     :postcondition: Return None if invalid input is provided
-    :return: A string representing the chosen direction ('north', 'west',
-             'east', 'south') or None if invalid choice.
+    :return: A string representing the chosen direction ('north', 'west', 'east', 'south') or None if invalid choice.
     """
     direction_menu = [
         "Choose a direction:",
@@ -305,6 +316,14 @@ def generate_tasks():
 
 # noinspection SpellCheckingInspection
 def handle_shrine_task(player, tasks):
+    """
+    Handle the player's interaction inside the church/shrine, based on their current quest progress.
+
+    :param player: dict – The player's current state, including 'next_task' and 'progress'.
+    :param tasks: iterator – A generator or list iterator of upcoming task strings.
+    :precondition: player must include 'next_task' and optionally a 'progress' dict.
+    :postcondition: If the player prays (option "1"), a peaceful message is shown.
+    """
     progress = player.setdefault("progress", {})
     current_task = player.get("next_task")
 
@@ -351,6 +370,17 @@ def handle_shrine_task(player, tasks):
 
 
 def handle_market_task(player, tasks):
+    """
+    Handle player interactions at the Adal Market.
+
+    :param player: dict – The player's current state, including 'gold', 'health', 'progress', and 'next_task'.
+    :param tasks: iterator – A generator or list iterator of upcoming task strings.
+
+    :precondition: player must have 'gold', 'health', and optionally 'progress' and 'position'.
+    :postcondition: Update player's gold and health if medicine is purchased.
+    :postcondition: Update player's progress and next_task if translator interaction occurs.
+    :postcondition: May change player["position"] if scammed.
+    """
     progress = player.setdefault("progress", {})
 
     update_display([
@@ -389,6 +419,17 @@ def handle_market_task(player, tasks):
 
 
 def handle_message_task(player, tasks):
+    """
+    Handle the player's discovery of the hidden message and update task progression.
+
+    :param player: dict – The player's current state, including 'progress' and 'next_task'.
+    :param tasks: iterator – A generator or list iterator of upcoming task strings.
+
+    :precondition: player must include a mutable dictionary with 'progress' and 'next_task'.
+    :postcondition: Add 'found_message' = True to player["progress"].
+    :postcondition: Set the player's next task using next(tasks).
+    :postcondition: Call update_display() to describe the event to the player.
+    """
     progress = player.setdefault("progress", {})
     update_display([
         "You find the hidden message scrawled on old parchment.",
@@ -401,6 +442,16 @@ def handle_message_task(player, tasks):
 
 
 def handle_oracle_task(player, tasks):
+    """
+    Handle the player's interaction with the Oracle, involving a riddle challenge.
+
+    :param player: dict – Player state, including 'progress' and 'next_task'.
+    :param tasks: iterator – A generator or list iterator of remaining tasks.
+
+    :precondition: player["next_task"] must be either "Goto the oracle to find the shift key"
+                   or "Solve the oracle's puzzle" for the riddle to be asked.
+    :postcondition: Set progress["cipher_shift"] = 3 and advance player["next_task"] if puzzle solved correctly.
+    """
     progress = player.setdefault("progress", {})
     current_task = player.get("next_task")
 
@@ -420,6 +471,20 @@ def handle_oracle_task(player, tasks):
 
 # noinspection SpellCheckingInspection
 def handle_final_battle(player, tasks):
+    """
+    Handle the final confrontation with Queen Yodit.
+
+    :param player: dict – Player state including health, status, and next_task.
+    :param tasks: iterator – A generator or list iterator of any remaining tasks.
+
+    :precondition: player must contain 'health' and 'status'.
+    :postcondition: Display a narrative sequence based on the player's choice.
+    :postcondition: Set player['status'] to 'defeated' if the player chooses a solo attack.
+    :postcondition: Set player['health'] to 0 if the player chooses a solo attack.
+    :postcondition: Set player['status'] to 'victorious' if the player chooses to call for reinforcements.
+    :postcondition: Reduce player['health'] to a minimum of 10 if the player chooses to call for reinforcements.
+    :postcondition: Update player['next_task'] to the next task from the generator or a fallback message.
+    """
     update_display([
         "You approach the enemy king's hiding place.",
         f"{Fore.RED}Queen Yodit{Style.RESET_ALL} stands guard, sword drawn.",
@@ -467,11 +532,24 @@ def handle_final_battle(player, tasks):
             update_display([scene], save_text=True)
             time.sleep(2)
         player["status"] = "victorious"
-        player["health"] -= min(10, player["health"] - 30)
+        player["health"] = max(10, player["health"] - 30)
         player["next_task"] = next(tasks, "No more task, Victorious!")
 
 
 def handle_trap(player):
+    """
+    Handle trap events triggered when the player steps on certain marked map locations.
+
+    :param player: dict – The player's current state, including 'position', 'health', 'gold', and 'visible places'.
+
+    :precondition: player must include a valid 'position' and 'visible places' mapping names to coordinates.
+    :postcondition: Identify the place name at the player's current position.
+    :postcondition: Reduce player['health'] by 15 if the trap is a scorpion.
+    :postcondition: Reduce player['health'] by 10 and player['gold'] by 15 if the trap is an ambush.
+    :postcondition: Display immersive text and trigger drum beats if the trap is a drum circle.
+    :postcondition: Print musical beats randomly if the drum circle is triggered.
+    :postcondition: Display an escape message once the player exits the drum circle.
+    """
     place_name = ""
     current_pos = player["position"]
     for name, data in player["visible places"].items():
@@ -509,6 +587,20 @@ def handle_trap(player):
 
 
 def handle_tasks(player, adal_places, tasks):
+    """
+    Determine and trigger the appropriate event handler based on the player's current position.
+
+    :param player: dict – The player's current state including 'position' and 'progress'.
+    :param adal_places: dict – The game map with positions mapped to place data.
+    :param tasks: A generator of upcoming tasks.
+
+    :precondition: player must include a valid 'position' matching a key in adal_places.
+    :postcondition: Identify the current place name based on the player's position.
+    :postcondition: Call the corresponding handler function if the place has a story event.
+    :postcondition: Pass only the player to trap handlers like drum circle or ambush.
+    :postcondition: Pass both player and tasks to non-trap story handlers.
+    :postcondition: Display a default message if the place has no associated handler.
+    """
     current_pos = player["position"]
     place_data = adal_places[current_pos]
     place_name = place_data["name"]
@@ -538,6 +630,19 @@ def handle_tasks(player, adal_places, tasks):
 
 
 def initialize_level_three(player):
+    """
+    Initialize the player's stats and environment for Level 3: The Rook's Shadow Campaign.
+
+    :param player: dict – The player's data structure to be initialized and updated.
+    :precondition: player must be a dictionary ready to be initialized for Level 3.
+    :postcondition: Set player attributes including piece, position, suspicion, health, and gold.
+    :postcondition: Display the level intro and training sequence to the player.
+    :postcondition: Generate the Adal map and identify locations with villagers.
+    :postcondition: Initialize the player's task sequence and set the first task.
+    :postcondition: Update visible places based on the player's state and current task.
+    :postcondition: Save the player's state and display a mission start message.
+    :return: Tuple (adal_places, villagers, tasks)
+    """
     player.update({
         "piece": "rook",
         "position": [12, 22],
@@ -565,6 +670,19 @@ def initialize_level_three(player):
 
 
 def run_level(player):
+    """
+    Run the main game loop for Level 3: The Rook's Shadow Campaign.
+
+    :param player: dict – The player's data structure, updated as the level progresses.
+    :precondition: player must include fields such as 'position', 'health', 'suspicion', and 'next_task'.
+    :postcondition: Initialize the level and assign starting values using initialize_level_three().
+    :postcondition: Continuously prompt the player for movement until the king is found or the player fails.
+    :postcondition: Update player position and trigger tasks or villager encounters based on map content.
+    :postcondition: Call appropriate task handlers when standing on visible story-related places.
+    :postcondition: Save player state after key actions and update visible locations.
+    :postcondition: Display final player status and return updated player data after game loop ends.
+    :return: Updated player dictionary after level completion or failure.
+    """
     board_start = (5, 15)
     found_king = False
     adal_places, villagers, tasks = initialize_level_three(player)
