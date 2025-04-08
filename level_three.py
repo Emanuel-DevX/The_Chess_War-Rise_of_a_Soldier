@@ -1,13 +1,11 @@
 import time
-from xml.sax.saxutils import escape
-
 from colorama import Fore, Style
-
 from display_manager import update_display
 from player_manager import save_player
 from utilities import *
 
 # Game Constants
+# noinspection SpellCheckingInspection
 AMHARIC_PHRASES = {
     "selam": {"reply": "selam", "fail_penalty": 20},
     "dehna neh?": {"reply": "dehna", "fail_penalty": 20},
@@ -22,20 +20,20 @@ TRAP_TYPES = {
 }
 
 
+# noinspection SpellCheckingInspection
 def level_three_intro():
     intro_text = f"""
-
 ██████╗ ██╗  ██╗██╗   ██╗███╗   ███╗███████╗     ██████╗ █████╗ ██╗     ██╗     
 ██╔══██╗╚██╗██╔╝██║   ██║████╗ ████║██╔════╝    ██╔════╝██╔══██╗██║     ██║     
 ███████║ ╚███╔╝ ██║   ██║██╔████╔██║███████╗    ██║     ███████║██║     ██║     
 ██╔══██║ ██╔██╗ ██║   ██║██║╚██╔╝██║╚════██║    ██║     ██╔══██║██║     ██║     
 ██║  ██║██╔╝ ██╗╚██████╔╝██║ ╚═╝ ██║███████║    ╚██████╗██║  ██║███████╗███████╗
 ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚═╝╚══════╝     ╚═════╝╚═╝  ╚═╝╚══════╝╚══════╝
-                                                                                
-
+{Fore.LIGHTYELLOW_EX}
     ───────────────────────────────────────────
-        LEVEL 3: THE ROOK'S SHADOW CAMPAIGN
+    .   LEVEL 3: THE ROOK'S SHADOW CAMPAIGN   .
     ───────────────────────────────────────────
+{Style.RESET_ALL}                                                                                
 
     The year is 1896. You are Agent "Tower", a royal spy embedded in the breakaway 
     territory of Adal. Once part of the great Axum kingdom, this land was 
@@ -61,6 +59,7 @@ def level_three_intro():
     input()
 
 
+# noinspection SpellCheckingInspection
 def level_three_training():
     training_text = f"""
     ────────────────────────
@@ -69,16 +68,17 @@ def level_three_training():
 
     █ MOVEMENT
     Unlike peasants who wander, you move with purpose:
-    ↑ North    ↓ South    ← West    → East
+    {Fore.LIGHTMAGENTA_EX}↑ North    ↓ South    ← West    → East{Style.RESET_ALL}
 
     █ CULTURAL TRAINING
     Adal locals will test you. Memorize these:
-    {Fore.LIGHTCYAN_EX}
-    When they say:                                You reply:
-    "selam" (Greetings)                              "selam"
-    "dehna neh?" (How are you?)                      "dehna" (fine)
-    "Simih manew?" (What is your name?)              "Dawit" (A common name)
-    "Wedet eyehedk nw?" (Where are you headed?)      "Church" (Obviously..){Style.RESET_ALL}
+    ≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈
+    When they say:                               You reply:
+    "selam" (Greetings)                         {Fore.LIGHTCYAN_EX}"selam"{Style.RESET_ALL}
+    "dehna neh?" (How are you?)                 {Fore.LIGHTCYAN_EX}"dehna" (fine){Style.RESET_ALL}
+    "Simih manew?" (What is your name?)         {Fore.LIGHTCYAN_EX}"Dawit" (A common name){Style.RESET_ALL}
+    "Wedet eyehedk nw?" (Where are you headed?) {Fore.LIGHTCYAN_EX}"Church" (Obviously..){Style.RESET_ALL}
+    ≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈
     
     This is the last time you will get the translations beware!
     You will be dressed in yellow to easily blend in with the locals.
@@ -93,7 +93,7 @@ def level_three_training():
     update_display(training_text.splitlines(), save_text=True, status=False)
 
     # Simulated training
-    for _ in range(5):
+    for _ in range(2):
         test_phrase = random.choice(list(AMHARIC_PHRASES.keys()))
         convo = ["", f"Elder says: '{test_phrase}'", "Your reply: "]
         response = input(f"Elder says: '{test_phrase}'\nYour reply: ").lower()
@@ -201,7 +201,7 @@ def update_player_visible_places(player, adal_map):
 
     if task not in ["Goto the oracle to find the shift key", "Find the hidden message"]:
         for position, place in adal_map.items():
-            if place["name"] == "oracle" and  progress.get("translated_but_encrypted") is False:
+            if place["name"] == "oracle" and progress.get("translated_but_encrypted") is False:
                 place["hidden"] = True
                 place["symbol"] = None
 
@@ -219,22 +219,13 @@ def update_player_visible_places(player, adal_map):
             }
 
 
-def generate_clues():
-    """Create progressive clues with red herrings"""
-    return [
-        {"id": 1, "text": "ገብረ በ 3 ማዕረግ ወደ ሰሜን በር", "type": "amharic", },
-        {"id": 2, "text": "The king moves like the horse but hides like the pawn", "is_scam": True, "type": "hint"},
-        {"id": 3, "text": "VHQG LV WKH NHB", "type": "caesar", "shift": 3},
-        {"id": 4, "text": "Find the woman who sings of St. George", "type": "oracle_loc"},
-        {"id": 5, "text": "Gate combination: animal, plant, stone", "type": "oracle_key"}
-    ]
-
+# noinspection SpellCheckingInspection
 
 def handle_villager_encounter(player):
     """Random cultural challenge"""
     phrase, data = random.choice(list(AMHARIC_PHRASES.items()))
 
-    options = {"1": "selam", "2":"dawit", "3":"church", "4":"dehna"}
+    options = {"1": "selam", "2": "dawit", "3": "church", "4": "dehna"}
     options_menu = [
         f"{Fore.LIGHTBLUE_EX}Local approaches and says:{Style.RESET_ALL} '{phrase}'",
         "What do you reply?",
@@ -242,7 +233,7 @@ def handle_villager_encounter(player):
     ]
     update_display(options_menu, save_text=True)
 
-    reply = options.get(input("> ").strip(),"")
+    reply = options.get(input("> ").strip(), "")
     update_display([reply], save_text=True)
     if reply != data["reply"]:
         player["suspicion"] += data["fail_penalty"]
@@ -299,6 +290,7 @@ def generate_tasks():
     yield "Lead the final strike️"
 
 
+# noinspection SpellCheckingInspection
 def handle_shrine_task(player, tasks):
     progress = player.setdefault("progress", {})
     current_task = player.get("next_task")
@@ -412,6 +404,7 @@ def handle_oracle_task(player, tasks):
             update_display(["'Come back when you have the answer.'"], save_text=True)
 
 
+# noinspection SpellCheckingInspection
 def handle_final_battle(player, tasks):
     update_display([
         "You approach the enemy king's hiding place.",
@@ -437,14 +430,14 @@ def handle_final_battle(player, tasks):
 
         for scene in fight_scene:
             update_display([scene], save_text=True)
-            time.sleep(0.5)
+            time.sleep(2)
 
         player["status"] = "defeated"
         player["health"] = 0
-        return False
+        player["next_task"] = next(tasks, "No more task, Defeated!")
 
     else:
-        fight_scene =[
+        fight_scene = [
             f"You send the signal. Moments later, chaos erupts at the palace gates!",
             f"{Fore.GREEN}You and a small strike team storm the rear! Swords drawn, eyes blazing!{Style.RESET_ALL}",
             f"{Fore.GREEN}In the throne room, Queen Yodit stands her ground. She charges!{Style.RESET_ALL}",
@@ -458,17 +451,14 @@ def handle_final_battle(player, tasks):
         ]
         for scene in fight_scene:
             update_display([scene], save_text=True)
-            time.sleep(0.5)
+            time.sleep(2)
         player["status"] = "victorious"
         player["health"] -= min(10, player["health"] - 30)
-        return True
-
-
+        player["next_task"] = next(tasks, "No more task, Victorious!")
 
 
 def handle_trap(player):
-    place_name =""
-
+    place_name = ""
     current_pos = player["position"]
     for name, data in player["visible places"].items():
         if data["position"] == current_pos:
@@ -541,6 +531,7 @@ def initialize_level_three(player):
         "found_clues": [],
         "gold": 100,
         "health": 100,
+        "status": None
     })
     level_three_intro()
     level_three_training()
@@ -553,11 +544,10 @@ def initialize_level_three(player):
 
     save_player(player)
     update_display([""] * 30 + ["Mission started. Good luck, Agent."], save_text=True)
-    generate_clues()
-    update_display([f"Your next task is to {Fore.LIGHTYELLOW_EX}{player['next_task']}{Style.RESET_ALL}"], save_text=True)
+    update_display([f"Your next task is to {Fore.LIGHTYELLOW_EX}{player['next_task']}{Style.RESET_ALL}"],
+                   save_text=True)
 
     return adal_places, villagers, tasks
-
 
 
 def run_level(player):
@@ -600,11 +590,13 @@ def run_level(player):
         if any(place["position"] == new_pos for place in player["visible places"].values()):
             handle_tasks(player, adal_places, tasks)
 
-            if player["status"]== "victorious":
-                adal_places[new_pos]["hidden"]=True
-                adal_places[new_pos]["symbol"]=None
+            if player["status"] == "victorious":
+                adal_places[new_pos]["hidden"] = True
+                adal_places[new_pos]["symbol"] = None
                 found_king = True
             save_player(player)
             update_player_visible_places(player, adal_places)
 
     save_player(player)
+    update_display([str(player["status"])], save_text=True)
+    return player
