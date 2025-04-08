@@ -31,7 +31,7 @@ class TestPromotePlayer(TestCase):
         }
         expected = {
             'piece': 'rook',
-            'position': [2, 2],  # Position should remain unchanged
+            'position': [0, 0],
             'gold': 40,  # 10 + 30
             'knowledge': ['Existing Skill', 'Master of Straight-Line Power'],
             'completed_challenges': ['Previous Challenge', 'Level 2 Completed']

@@ -28,7 +28,7 @@ class TestGetBishopMoveChoice(TestCase):
     @patch('level_two.update_display')
     @patch('builtins.input')
     def test_valid_first_try(self, mock_input, _):
-        mock_input.return_value = '1'
+        mock_input.return_value = '2'
 
         result = get_bishop_move_choice()
 
