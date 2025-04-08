@@ -118,7 +118,7 @@ def generate_level_walls(center_row, center_col, size=8):
     ]
 
 
-def initialize_game_map(size=30, default_tile="🌑 "):
+def initialize_game_map(size: int = 30, default_tile: str = "🌑 ") -> list[list[str]]:
     """
     Create a blank game map with specified dimensions.
 
