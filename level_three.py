@@ -312,7 +312,7 @@ def handle_shrine_task(player, tasks):
     choice = input("> ").strip()
 
     if choice == "1":
-        update_display([f"{Fore.GREEN}You kneel quietly in prayer.{Style.RESET_ALL}"])
+        update_display([f"{Fore.GREEN}You kneel quietly in prayer.{Style.RESET_ALL}"], save_text=True)
         time.sleep(0.3)
         return
 
@@ -334,14 +334,14 @@ def handle_shrine_task(player, tasks):
             update_display([
                 "'Ah, you have the key? Good.'",
                 "'Decoding now... The king is being hidden in the mountain temple, guarded by Queen Yodit.'"
-            ])
+            ], save_text=True)
             progress["king_location_known"] = True
-            player["current_task"] = next(tasks)
+            player["next_task"] = next(tasks)
 
         else:
-            update_display(["'Come back when you're ready.'"])
+            update_display(["'Come back when you're ready.'"], save_text=True)
     else:
-        update_display(["You leave the church."])
+        update_display(["You leave the church."], save_text=True)
 
 
 def handle_market_task(player, tasks):
@@ -396,51 +396,74 @@ def handle_message_task(player, tasks):
 
 def handle_oracle_task(player, tasks):
     progress = player.setdefault("progress", {})
-    current_task = player.get("current_task")
+    current_task = player.get("next_task")
 
     if current_task in ["Goto the oracle to find the shift key", "Solve the oracle's puzzle"]:
         update_display([
             "🧙‍♂️ The Oracle greets you: 'Answer me this:'",
             "'What walks on four legs in the morning, two at noon, and three in the evening?'"
-        ])
+        ], save_text=False)
         answer = input("> ").strip().lower()
         if "man" in answer:
-            update_display(["'Correct. The cipher shift is 3. Use it wisely.'"])
+            update_display(["'Correct. The cipher shift is 3. Use it wisely.'"], save_text=True)
             progress["cipher_shift"] = 3
-            player["current_task"] = next(player["task_gen"])
+            player["next_task"] = next(tasks)
         else:
-            update_display(["'Come back when you have the answer.'"])
+            update_display(["'Come back when you have the answer.'"], save_text=True)
 
 
 def handle_final_battle(player, tasks):
     update_display([
-        "🔴 You approach the enemy king's hiding place.",
-        "Queen Yodit stands guard, sword drawn.",
+        "You approach the enemy king's hiding place.",
+        f"{Fore.RED}Queen Yodit{Style.RESET_ALL} stands guard, sword drawn.",
         "What will you do?",
         "1. Attempt a solo attack",
         "2. Return and inform your king"
-    ])
+    ], save_text=True)
     choice = input("> ").strip()
 
     if choice == "1":
-        update_display([
-            "⚔️ You charge forward, facing Queen Yodit in a fierce duel...",
-            "You fight valiantly... but she strikes you down.",
-            "🩸 Your mission ends in tragedy."
-        ])
-        player["status"] = "defeated"
+        fight_scene = [
+            f"{Fore.RED}You break into the palace alone, blade at your side...{Style.RESET_ALL}",
+            f"{Fore.LIGHTGREEN_EX}A guard lunges—you parry, spin, and cut him down.{Style.RESET_ALL}",
+            f"{Fore.RED}You press deeper through the halls... breathing heavy... bleeding...{Style.RESET_ALL}",
+            f"{Fore.RED}In the king's chamber—Queen Yodit awaits, sword glinting in candlelight.{Style.RESET_ALL}",
+            f"{Fore.RED}'You're brave,' she hisses, 'but foolish.'{Style.RESET_ALL}",
+            f"{Fore.LIGHTGREEN_EX}You clash—steel against steel! You land a deep gash on her shoulder!{Style.RESET_ALL}",
+            f"{Fore.RED}But more guards arrive. You fight... and fall beneath their blades.{Style.RESET_ALL}",
+            f"{Fore.RED}🩸 Your body lies still. Your mission ends in tragedy.{Style.RESET_ALL}",
+            f"{Fore.RED}GAME OVER.{Style.RESET_ALL}"
+        ]
 
-    elif choice == "2":
-        update_display([
-            "🏇 You return to your king with the message.",
-            "Reinforcements arrive. Together, you battle Queen Yodit.",
-            "After a brutal fight, she falls. The king is captured. 🎯",
-            "Victory is yours!"
-        ])
-        player["status"] = "victorious"
+        for scene in fight_scene:
+            update_display([scene], save_text=True)
+            time.sleep(0.5)
+
+        player["status"] = "defeated"
+        player["health"] = 0
+        return False
 
     else:
-        update_display(["You hesitate, and the moment passes."])
+        fight_scene =[
+            f"You send the signal. Moments later, chaos erupts at the palace gates!",
+            f"{Fore.GREEN}You and a small strike team storm the rear! Swords drawn, eyes blazing!{Style.RESET_ALL}",
+            f"{Fore.GREEN}In the throne room, Queen Yodit stands her ground. She charges!{Style.RESET_ALL}",
+            f"{Fore.RED}You block her strike—but not fast enough. "
+            f"Blood sprays from your arm! (-30 health){Style.RESET_ALL}",
+            f"{Fore.GREEN}The pain fuels your fury—you riposte and slash her thigh! She stumbles!{Style.RESET_ALL}",
+            f"{Fore.GREEN}Your team surrounds the king. He drops his blade. The room falls silent...{Style.RESET_ALL}",
+            f"{Fore.GREEN}The enemy king is captured. Queen Yodit lies defeated.{Style.RESET_ALL}",
+            f"{Fore.GREEN}You fought hard—and won. Adal is free once more!{Style.RESET_ALL}",
+            f"{Fore.GREEN}VICTORY!{Style.RESET_ALL}"
+        ]
+        for scene in fight_scene:
+            update_display([scene], save_text=True)
+            time.sleep(0.5)
+        player["status"] = "victorious"
+        player["health"] -= min(10, player["health"] - 30)
+        return True
+
+
 
 
 def handle_trap(player):
@@ -465,7 +488,7 @@ def handle_trap(player):
         update_display([
             f"{Fore.RED}⚔️ You’re ambushed by enemy scouts!{Style.RESET_ALL}",
             f"{Fore.RED}-10 health, -15 gold.{Style.RESET_ALL}"
-        ])
+        ], save_text=True)
 
     elif place_name == "drum circle":
         update_display([
@@ -510,7 +533,7 @@ def handle_tasks(player, adal_places, tasks):
         update_display([f"You're at {place_name}. There's nothing story-related here yet."])
 
 
-def run_level(player):
+def initialize_level_three(player):
     player.update({
         "piece": "rook",
         "position": [12, 22],
@@ -521,23 +544,30 @@ def run_level(player):
     })
     level_three_intro()
     level_three_training()
+
     adal_places = generate_adal_places()
     villagers = {location for location, data in adal_places.items() if data["symbol"] is None}
     tasks = generate_tasks()
     player["next_task"] = next(tasks)
     update_player_visible_places(player, adal_places)
 
-
-    board_start = (5, 15)
     save_player(player)
-    start_mission_text = ["" for _ in range(30)]
-    start_mission_text.append("Mission started. Good luck, Agent.")
-    update_display(start_mission_text, save_text=True)
+    update_display([""] * 30 + ["Mission started. Good luck, Agent."], save_text=True)
     generate_clues()
+    update_display([f"Your next task is to {Fore.LIGHTYELLOW_EX}{player['next_task']}{Style.RESET_ALL}"], save_text=True)
 
+    return adal_places, villagers, tasks
+
+
+
+def run_level(player):
+    board_start = (5, 15)
     found_king = False
+    adal_places, villagers, tasks = initialize_level_three(player)
+
     save_player(player)
-    update_display([f"Your next task is to {player['next_task']}"])
+    update_display([f"Your next task is to {Fore.LIGHTYELLOW_EX}"
+                    f"{player['next_task']}{Style.RESET_ALL}"], save_text=True)
 
     while not found_king and player["health"] > 0 and player["suspicion"] < 100:
         save_player(player)
@@ -569,8 +599,12 @@ def run_level(player):
 
         if any(place["position"] == new_pos for place in player["visible places"].values()):
             handle_tasks(player, adal_places, tasks)
+
+            if player["status"]== "victorious":
+                adal_places[new_pos]["hidden"]=True
+                adal_places[new_pos]["symbol"]=None
+                found_king = True
             save_player(player)
             update_player_visible_places(player, adal_places)
-
 
     save_player(player)
